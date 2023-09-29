@@ -1,11 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&display=swap');
-
 @layer base {
 	html {
 		@apply font-sans;
+	}
+	h1 {
+		@apply text-xl font-bold;
+	}
+	h2 {
+		@apply text-lg font-bold;
 	}
 }
