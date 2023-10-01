@@ -5,7 +5,12 @@ export default {
 		fontFamily: {
 			sans: ['Manrope', 'sans-serif'],
 		},
-		extend: {},
+		extend: {
+			colors: {
+				accent: '#006CF8',
+				'accent-50': '#D7E8FF',
+			},
+		},
 	},
 	plugins: [],
 };
