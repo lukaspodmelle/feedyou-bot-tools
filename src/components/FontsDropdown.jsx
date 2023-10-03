@@ -1,28 +1,29 @@
 import React from 'react';
 import { Fragment, useState } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
-import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
+import { Check, CaretDown } from '@phosphor-icons/react';
 
-const people = [
-	{ name: 'Wade Cooper' },
-	{ name: 'Arlene Mccoy' },
-	{ name: 'Devon Webb' },
-	{ name: 'Tom Cook' },
-	{ name: 'Tanya Fox' },
-	{ name: 'Hellen Schmidt' },
+const fonts = [
+	{ name: 'Montserrat', weight: '300' },
+	{ name: 'Inter', weight: '300' },
+	{ name: 'Manrope', weight: '300' },
+	{ name: 'Arial', weight: '300' },
+	{ name: 'Playfair Display', weight: '700' },
+	{ name: 'Libre Baskerville', weight: '300' },
 ];
 
 const Dropdown = () => {
-	const [selected, setSelected] = useState(people[0]);
+	const [selected, setSelected] = useState(fonts[0]);
 	return (
 		<div className='w-full'>
 			<Listbox value={selected} onChange={setSelected}>
 				<div className='relative mt-1'>
-					<Listbox.Button className='relative w-full cursor-default border border-slate-200 rounded-md bg-white py-3 pl-3 pr-10 text-left focus:outline-none'>
+					<Listbox.Button className='relative w-full cursor-pointer border border-slate-200 rounded-md bg-white py-3 pl-3 pr-10 text-left focus:outline-none'>
 						<span className='block truncate'>{selected.name}</span>
-						<span className='pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2'>
-							<ChevronUpDownIcon
-								className='h-5 w-5 text-gray-400'
+						<span className='pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-gray-400'>
+							<CaretDown
+								weight='bold'
+								size={16}
 								aria-hidden='true'
 							/>
 						</span>
@@ -31,21 +32,23 @@ const Dropdown = () => {
 						as={Fragment}
 						leave='transition ease-in duration-100'
 						leaveFrom='opacity-100'
-						leaveTo='opacity-0'
-					>
+						leaveTo='opacity-0'>
 						<Listbox.Options className='absolute mt-2 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm'>
-							{people.map((person, personIdx) => (
+							{fonts.map((font, fontIdx) => (
 								<Listbox.Option
-									key={personIdx}
+									key={fontIdx}
 									className={({ active }) =>
-										`relative cursor-default select-none py-2 pl-10 pr-4 ${
+										`relative cursor-pointer select-none py-2 pl-10 pr-4 ${
 											active
 												? 'bg-accent-50 text-accent'
 												: 'text-gray-900'
 										}`
 									}
-									value={person}
-								>
+									value={font}
+									style={{
+										fontFamily: font.name,
+										fontWeight: font.weight,
+									}}>
 									{({ selected }) => (
 										<>
 											<span
@@ -53,15 +56,15 @@ const Dropdown = () => {
 													selected
 														? 'font-medium'
 														: 'font-normal'
-												}`}
-											>
-												{person.name}
+												}`}>
+												{font.name}
 											</span>
 											{selected ? (
 												<span className='absolute inset-y-0 left-0 flex items-center pl-3 text-accent'>
-													<CheckIcon
-														className='h-5 w-5'
+													<Check
 														aria-hidden='true'
+														weight='bold'
+														size={16}
 													/>
 												</span>
 											) : null}

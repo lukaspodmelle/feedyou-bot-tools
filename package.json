@@ -11,10 +11,10 @@
   },
   "dependencies": {
     "@headlessui/react": "^1.7.17",
-    "@heroicons/react": "^2.0.18",
     "@phosphor-icons/react": "^2.0.13",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "zustand": "^4.4.2"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",
