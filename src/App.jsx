@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { DownloadSimple, X, Alarm } from '@phosphor-icons/react';
-import { Nav, Input, FontsDropdown } from './components';
+import { Nav, Input, FontsDropdown, Warning } from './components';
+import { Switch } from '@headlessui/react';
 import phosphorIcons from './assets/phosphor-icons';
 
 const App = () => {
@@ -18,6 +19,8 @@ const App = () => {
 	const [CardIcon, setCardIcon] = useState(defaults.cardIcon);
 	const [cardIconColor, setCardIconColor] = useState(defaults.cardIconColor);
 	const [activeIcon, setActiveIcon] = useState(defaults.cardIcon);
+	const [iconsEnabled, setIconsEnabled] = useState(true);
+	const [cardText, setCardText] = useState('');
 
 	// Handle background color change
 	const handleColorChange = (color) => {
@@ -32,6 +35,24 @@ const App = () => {
 	const handleCardIconColorChange = (color) => {
 		setCardIconColor(color);
 	};
+
+	const handleCardTextChange = (text) => {
+		setCardText(text);
+	};
+
+	// Handle warnings
+	const handleWarning = (type) => {
+		let warnMessage = '';
+		switch (type) {
+			case 'tooManyChars':
+				warnMessage = `You've reached the maximum amount of text for this field.`;
+				break;
+			default:
+				warnMessage = `This is a warning message.`;
+		}
+		return <Warning message={warnMessage} />;
+	};
+
 	return (
 		<>
 			<Nav />
@@ -71,9 +92,21 @@ const App = () => {
 
 					<div className='mb-6'>
 						<p className='text-sm text-slate-500 mb-2'>Text</p>
-						<div className='flex gap-4'>
-							<Input placeholder='Your text' />
-							<div className='border border-slate-200 rounded-md p-3 w-full flex items-center'>
+						<div className='flex gap-4 relative'>
+							<Input
+								placeholder={'Your text'}
+								value={
+									cardText.length > 40
+										? cardText.slice(0, 40)
+										: cardText
+								}
+								onInputChange={handleCardTextChange}
+							/>
+
+							{cardText.length > 40 &&
+								handleWarning('tooManyChars')}
+
+							<div className='border border-slate-200 rounded-md p-3  flex items-center'>
 								<div className='border border-slate-200 rounded-full p-1'>
 									<span className='w-4 h-4 bg-black block rounded-full'></span>
 								</div>
@@ -91,9 +124,8 @@ const App = () => {
 					</div>
 					<div className='mb-6'>
 						<p className='text-sm text-slate-500 mb-2'>Icon</p>
-						<div className='border border-slate-200 p-3 flex gap-3 rounded-tl-md rounded-tr-md'>
-							<div className='w-[60%]'></div>
-							<div className='w-[40%] flex items-center'>
+						<div className='IconPickerHead border border-slate-200 p-3 flex justify-between rounded-tl-md rounded-tr-md'>
+							<div className='flex items-center'>
 								<div className='border border-slate-200 rounded-full p-1'>
 									<span
 										className='w-4 h-4 block rounded-full'
@@ -121,6 +153,23 @@ const App = () => {
 									}
 								/>
 							</div>
+							<Switch
+								checked={iconsEnabled}
+								onChange={setIconsEnabled}
+								className={`${
+									iconsEnabled ? 'bg-accent' : 'bg-gray-200'
+								} relative inline-flex h-6 w-11 items-center rounded-full`}>
+								<span className='sr-only'>
+									Enable notifications
+								</span>
+								<span
+									className={`${
+										iconsEnabled
+											? 'translate-x-6'
+											: 'translate-x-1'
+									} inline-block h-4 w-4 transform rounded-full bg-white transition`}
+								/>
+							</Switch>
 						</div>
 
 						<div className='border-x border-b border-slate-200 p-3 rounded-br-md rounded-bl-md grid grid-cols-5 gap-3 overflow-y-auto h-[18rem]'>
@@ -130,11 +179,11 @@ const App = () => {
 									onClick={() =>
 										handleCardIconChange(icon.icon)
 									}
-									className={
+									className={`${
 										icon.icon === activeIcon
-											? 'border-2 border-accent p-3 rounded-md aspect-square flex justify-center items-center focus:outline-accent'
-											: 'border border-slate-200 p-3 rounded-md aspect-square flex justify-center items-center hover:border-slate-300 hover:border-2 focus:outline-slate-300'
-									}>
+											? 'border-2 border-accent focus:outline-accent'
+											: 'border border-slate-200 hover:border-slate-300 hover:border-2 focus:outline-slate-300'
+									} p-3 rounded-md aspect-square flex justify-center items-center`}>
 									<icon.icon
 										weight='duotone'
 										size={26}
@@ -157,17 +206,29 @@ const App = () => {
 				</div>
 				<div className='Editor flex-1 bg-slate-50 p-12 flex justify-center'>
 					<div
-						className='Card w-[450px] h-[250px] flex items-center justify-center shadow-sm'
+						className='Card w-[450px] h-[250px] flex items-center justify-center shadow-sm overflow-hidden'
 						style={
 							backgroundColor !== ''
 								? { background: backgroundColor }
 								: { background: '#FFFFFF' }
 						}>
-						<CardIcon
-							size={100}
-							weight='duotone'
-							color={cardIconColor}
-						/>
+						<div className='flex flex-col justify-center items-center max-w-[70%]'>
+							{iconsEnabled ? (
+								<CardIcon
+									size={100}
+									weight='duotone'
+									color={cardIconColor}
+								/>
+							) : (
+								''
+							)}
+
+							<span className='text-white text-3xl text-center'>
+								{cardText.length > 40
+									? cardText.slice(0, 40)
+									: cardText}
+							</span>
+						</div>
 					</div>
 				</div>
 			</div>
