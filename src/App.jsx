@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
-import { DownloadSimple, X, Alarm } from '@phosphor-icons/react';
+import { DownloadSimple, X, HandWaving } from '@phosphor-icons/react';
 import { Nav, Input, FontsDropdown, Warning } from './components';
 import { Switch } from '@headlessui/react';
 import phosphorIcons from './assets/phosphor-icons';
+
+import { useFontStore } from './context/fontStore';
 
 const App = () => {
 	// Defaults
 	const defaults = {
 		backgroundColor: '#006cf8',
-		cardIcon: Alarm,
+		cardIcon: HandWaving,
 		cardIconColor: '#FFFFFF',
+		cardTextColor: '#FFFFFF',
 	};
 
 	// States
@@ -21,8 +24,12 @@ const App = () => {
 	const [activeIcon, setActiveIcon] = useState(defaults.cardIcon);
 	const [iconsEnabled, setIconsEnabled] = useState(true);
 	const [cardText, setCardText] = useState('');
+	const [cardTextColor, setCardTextColor] = useState(defaults.cardTextColor);
 
-	// Handle background color change
+	// Stores
+	const { selectedFont } = useFontStore();
+
+	// Handler functions
 	const handleColorChange = (color) => {
 		setBackgroundColor(color);
 	};
@@ -40,7 +47,10 @@ const App = () => {
 		setCardText(text);
 	};
 
-	// Handle warnings
+	const handleCardTextColorChange = (color) => {
+		setCardTextColor(color);
+	};
+
 	const handleWarning = (type) => {
 		let warnMessage = '';
 		switch (type) {
@@ -70,7 +80,8 @@ const App = () => {
 										backgroundColor !== ''
 											? { background: backgroundColor }
 											: { background: '#FFFFFF' }
-									}>
+									}
+								>
 									{backgroundColor === '' ? (
 										<X color='#d1d9e3' />
 									) : (
@@ -108,12 +119,28 @@ const App = () => {
 
 							<div className='border border-slate-200 rounded-md p-3  flex items-center'>
 								<div className='border border-slate-200 rounded-full p-1'>
-									<span className='w-4 h-4 bg-black block rounded-full'></span>
+									<span
+										className='w-4 h-4 block rounded-full'
+										style={
+											cardTextColor !== ''
+												? { background: cardTextColor }
+												: {
+														background:
+															defaults.cardTextColor,
+												  }
+										}
+									></span>
 								</div>
 								<input
 									type='text'
 									placeholder='#FFFFFF'
 									className='w-full ml-4 focus:outline-none'
+									value={cardTextColor}
+									onChange={(e) =>
+										handleCardTextColorChange(
+											e.target.value
+										)
+									}
 								/>
 							</div>
 						</div>
@@ -133,7 +160,8 @@ const App = () => {
 											cardIconColor !== ''
 												? { background: cardIconColor }
 												: { background: '#FFFFFF' }
-										}>
+										}
+									>
 										{cardIconColor === '' ? (
 											<X color='#d1d9e3' />
 										) : (
@@ -144,24 +172,27 @@ const App = () => {
 								<input
 									type='text'
 									placeholder='#000000'
-									className='w-full ml-4 focus:outline-none'
+									className={`${
+										iconsEnabled
+											? ''
+											: 'disabled:text-slate-300 disabled:bg-transparent'
+									} w-full ml-4 focus:outline-none`}
 									value={cardIconColor}
 									onChange={(e) =>
 										handleCardIconColorChange(
 											e.target.value
 										)
 									}
+									disabled={!iconsEnabled && 'disabled'}
 								/>
 							</div>
 							<Switch
 								checked={iconsEnabled}
 								onChange={setIconsEnabled}
 								className={`${
-									iconsEnabled ? 'bg-accent' : 'bg-gray-200'
-								} relative inline-flex h-6 w-11 items-center rounded-full`}>
-								<span className='sr-only'>
-									Enable notifications
-								</span>
+									iconsEnabled ? 'bg-accent' : 'bg-slate-200'
+								} relative inline-flex h-6 w-11 items-center rounded-full`}
+							>
 								<span
 									className={`${
 										iconsEnabled
@@ -172,7 +203,9 @@ const App = () => {
 							</Switch>
 						</div>
 
-						<div className='border-x border-b border-slate-200 p-3 rounded-br-md rounded-bl-md grid grid-cols-5 gap-3 overflow-y-auto h-[18rem]'>
+						<div
+							className={`IconPickerBody p-3 border-b border-x border-slate-200 rounded-br-md rounded-bl-md grid grid-cols-5 gap-3 overflow-y-auto h-[18rem]`}
+						>
 							{phosphorIcons.map((icon, index) => (
 								<button
 									key={index}
@@ -180,17 +213,22 @@ const App = () => {
 										handleCardIconChange(icon.icon)
 									}
 									className={`${
-										icon.icon === activeIcon
-											? 'border-2 border-accent focus:outline-accent'
-											: 'border border-slate-200 hover:border-slate-300 hover:border-2 focus:outline-slate-300'
-									} p-3 rounded-md aspect-square flex justify-center items-center`}>
+										iconsEnabled
+											? icon.icon === activeIcon
+												? 'border-accent focus:outline-accent'
+												: 'border-slate-200 hover:border-slate-300 hover:border-2 focus:outline-slate-300'
+											: ' pointer-events-none cursor-not-allowed'
+									} border-2 p-3 rounded-md aspect-square flex justify-center items-center`}
+								>
 									<icon.icon
 										weight='duotone'
 										size={26}
 										color={
-											icon.icon === activeIcon
-												? '#006cf8'
-												: '#475569'
+											iconsEnabled
+												? icon.icon === activeIcon
+													? '#006cf8'
+													: '#475569'
+												: '#cbd5e1'
 										}
 									/>
 								</button>
@@ -200,8 +238,9 @@ const App = () => {
 				</div>
 				<div
 					className='Export md:w-[26rem] bg-accent text-white text-xl absolute bottom-0 left-0 w-full p-8 cursor-pointer flex justify-center items-center gap-4'
-					onClick={() => {}}>
-					<span className='font-bold'>Export All</span>
+					onClick={() => {}}
+				>
+					<span className='font-bold'>Export Image</span>
 					<DownloadSimple size={19} weight='bold' />
 				</div>
 				<div className='Editor flex-1 bg-slate-50 p-12 flex justify-center'>
@@ -211,8 +250,9 @@ const App = () => {
 							backgroundColor !== ''
 								? { background: backgroundColor }
 								: { background: '#FFFFFF' }
-						}>
-						<div className='flex flex-col justify-center items-center max-w-[70%]'>
+						}
+					>
+						<div className='flex flex-col gap-2 justify-center items-center max-w-[70%]'>
 							{iconsEnabled ? (
 								<CardIcon
 									size={100}
@@ -223,10 +263,21 @@ const App = () => {
 								''
 							)}
 
-							<span className='text-white text-3xl text-center'>
-								{cardText.length > 40
-									? cardText.slice(0, 40)
-									: cardText}
+							<span
+								className='text-3xl text-center'
+								style={
+									cardTextColor !== ''
+										? {
+												color: cardTextColor,
+												fontFamily: selectedFont.name,
+										  }
+										: {
+												color: defaults.cardTextColor,
+												fontFamily: selectedFont.name,
+										  }
+								}
+							>
+								{cardText}
 							</span>
 						</div>
 					</div>

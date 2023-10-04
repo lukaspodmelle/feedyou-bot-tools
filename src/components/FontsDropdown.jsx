@@ -3,23 +3,23 @@ import { Fragment, useState } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
 import { Check, CaretDown } from '@phosphor-icons/react';
 
-const fonts = [
-	{ name: 'Montserrat', weight: '300' },
-	{ name: 'Inter', weight: '300' },
-	{ name: 'Manrope', weight: '300' },
-	{ name: 'Arial', weight: '300' },
-	{ name: 'Playfair Display', weight: '700' },
-	{ name: 'Libre Baskerville', weight: '300' },
-];
+import { useFontStore, fonts } from '../context/fontStore';
 
 const Dropdown = () => {
-	const [selected, setSelected] = useState(fonts[0]);
+	const { selectedFont, setSelectedFont } = useFontStore();
+
+	const handleFontChange = (font) => {
+		setSelectedFont(font);
+	};
+
 	return (
 		<div className='w-full'>
-			<Listbox value={selected} onChange={setSelected}>
+			<Listbox value={selectedFont} onChange={handleFontChange}>
 				<div className='relative mt-1'>
 					<Listbox.Button className='relative w-full cursor-pointer border border-slate-200 rounded-md bg-white py-3 pl-3 pr-10 text-left focus:outline-none'>
-						<span className='block truncate'>{selected.name}</span>
+						<span className='block truncate'>
+							{selectedFont.name}
+						</span>
 						<span className='pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-gray-400'>
 							<CaretDown
 								weight='bold'
@@ -32,8 +32,9 @@ const Dropdown = () => {
 						as={Fragment}
 						leave='transition ease-in duration-100'
 						leaveFrom='opacity-100'
-						leaveTo='opacity-0'>
-						<Listbox.Options className='absolute mt-2 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm'>
+						leaveTo='opacity-0'
+					>
+						<Listbox.Options className='absolute mt-2 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm z-20'>
 							{fonts.map((font, fontIdx) => (
 								<Listbox.Option
 									key={fontIdx}
@@ -48,7 +49,8 @@ const Dropdown = () => {
 									style={{
 										fontFamily: font.name,
 										fontWeight: font.weight,
-									}}>
+									}}
+								>
 									{({ selected }) => (
 										<>
 											<span
@@ -56,7 +58,8 @@ const Dropdown = () => {
 													selected
 														? 'font-medium'
 														: 'font-normal'
-												}`}>
+												}`}
+											>
 												{font.name}
 											</span>
 											{selected ? (
