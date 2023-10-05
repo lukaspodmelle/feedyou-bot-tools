@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { DownloadSimple, X, HandWaving } from '@phosphor-icons/react';
 import { Nav, Input, FontsDropdown, Warning } from './components';
 import { Switch } from '@headlessui/react';
 import phosphorIcons from './assets/phosphor-icons';
+import { toPng } from 'html-to-image';
 
 import { useFontStore } from './context/fontStore';
 
@@ -63,6 +64,29 @@ const App = () => {
 		return <Warning message={warnMessage} />;
 	};
 
+	// Html to png
+	const ref = useRef(null);
+
+	const handleImageExport = useCallback(() => {
+		if (ref.current === null) {
+			return;
+		}
+
+		toPng(ref.current, {
+			cacheBust: true,
+			pixelRatio: 3,
+		})
+			.then((dataUrl) => {
+				const link = document.createElement('a');
+				link.download = 'carousel-image.png';
+				link.href = dataUrl;
+				link.click();
+			})
+			.catch((err) => {
+				console.log(err);
+			});
+	}, [ref]);
+
 	return (
 		<>
 			<Nav />
@@ -80,8 +104,7 @@ const App = () => {
 										backgroundColor !== ''
 											? { background: backgroundColor }
 											: { background: '#FFFFFF' }
-									}
-								>
+									}>
 									{backgroundColor === '' ? (
 										<X color='#d1d9e3' />
 									) : (
@@ -128,8 +151,7 @@ const App = () => {
 														background:
 															defaults.cardTextColor,
 												  }
-										}
-									></span>
+										}></span>
 								</div>
 								<input
 									type='text'
@@ -160,8 +182,7 @@ const App = () => {
 											cardIconColor !== ''
 												? { background: cardIconColor }
 												: { background: '#FFFFFF' }
-										}
-									>
+										}>
 										{cardIconColor === '' ? (
 											<X color='#d1d9e3' />
 										) : (
@@ -191,8 +212,7 @@ const App = () => {
 								onChange={setIconsEnabled}
 								className={`${
 									iconsEnabled ? 'bg-accent' : 'bg-slate-200'
-								} relative inline-flex h-6 w-11 items-center rounded-full`}
-							>
+								} relative inline-flex h-6 w-11 items-center rounded-full`}>
 								<span
 									className={`${
 										iconsEnabled
@@ -204,8 +224,7 @@ const App = () => {
 						</div>
 
 						<div
-							className={`IconPickerBody p-3 border-b border-x border-slate-200 rounded-br-md rounded-bl-md grid grid-cols-5 gap-3 overflow-y-auto h-[18rem]`}
-						>
+							className={`IconPickerBody p-3 border-b border-x border-slate-200 rounded-br-md rounded-bl-md grid grid-cols-5 gap-3 overflow-y-auto h-[18rem]`}>
 							{phosphorIcons.map((icon, index) => (
 								<button
 									key={index}
@@ -218,8 +237,7 @@ const App = () => {
 												? 'border-accent focus:outline-accent'
 												: 'border-slate-200 hover:border-slate-300 hover:border-2 focus:outline-slate-300'
 											: ' pointer-events-none cursor-not-allowed'
-									} border-2 p-3 rounded-md aspect-square flex justify-center items-center`}
-								>
+									} border-2 p-3 rounded-md aspect-square flex justify-center items-center`}>
 									<icon.icon
 										weight='duotone'
 										size={26}
@@ -238,20 +256,19 @@ const App = () => {
 				</div>
 				<div
 					className='Export md:w-[26rem] bg-accent text-white text-xl absolute bottom-0 left-0 w-full p-8 cursor-pointer flex justify-center items-center gap-4'
-					onClick={() => {}}
-				>
+					onClick={handleImageExport}>
 					<span className='font-bold'>Export Image</span>
 					<DownloadSimple size={19} weight='bold' />
 				</div>
 				<div className='Editor flex-1 bg-slate-50 p-12 flex justify-center'>
 					<div
+						ref={ref}
 						className='Card w-[450px] h-[250px] flex items-center justify-center shadow-sm overflow-hidden'
 						style={
 							backgroundColor !== ''
 								? { background: backgroundColor }
 								: { background: '#FFFFFF' }
-						}
-					>
+						}>
 						<div className='flex flex-col gap-2 justify-center items-center max-w-[70%]'>
 							{iconsEnabled ? (
 								<CardIcon
@@ -275,8 +292,7 @@ const App = () => {
 												color: defaults.cardTextColor,
 												fontFamily: selectedFont.name,
 										  }
-								}
-							>
+								}>
 								{cardText}
 							</span>
 						</div>
