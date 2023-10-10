@@ -260,10 +260,10 @@ const App = () => {
 					<span className='font-bold'>Export Image</span>
 					<DownloadSimple size={19} weight='bold' />
 				</div>
-				<div className='Editor flex-1 bg-slate-50 p-12 flex justify-center'>
+				<div className='Editor p-12 flex flex-1 justify-center bg-slate-50'>
 					<div
 						ref={ref}
-						className='Card w-[450px] h-[250px] flex items-center justify-center shadow-sm overflow-hidden'
+						className='Card w-[450px] h-[250px] flex items-center justify-center shrink-0 shadow-sm overflow-hidden'
 						style={
 							backgroundColor !== ''
 								? { background: backgroundColor }
