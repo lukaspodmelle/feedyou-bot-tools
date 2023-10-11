@@ -3,11 +3,10 @@ import { DownloadSimple, X, HandWaving } from '@phosphor-icons/react';
 import { Switch } from '@headlessui/react';
 import { toPng } from 'html-to-image';
 
-import { Nav, Input, FontsDropdown, Warning } from './components';
-
+import { Nav, InputText, FontsDropdown, InputColor } from './components';
 import phosphorIcons from './assets/phosphor-icons';
 
-import { useFontStore } from './context/fontStore';
+import { useFontStore, useBackgroundColorStore } from './context';
 
 const App = () => {
 	// Defaults
@@ -19,9 +18,6 @@ const App = () => {
 	};
 
 	// States
-	const [backgroundColor, setBackgroundColor] = useState(
-		defaults.backgroundColor
-	);
 	const [CardIcon, setCardIcon] = useState(defaults.cardIcon);
 	const [cardIconColor, setCardIconColor] = useState(defaults.cardIconColor);
 	const [activeIcon, setActiveIcon] = useState(defaults.cardIcon);
@@ -31,13 +27,11 @@ const App = () => {
 
 	// Stores
 	const { selectedFont } = useFontStore();
+	const { backgroundColor } = useBackgroundColorStore();
 
-	// Handler function
+	// Handler functions
 	const handleCardChange = (type, value, index) => {
 		switch (type) {
-			case 'backgroundColor':
-				setBackgroundColor(value);
-				break;
 			case 'cardIcon':
 				setCardIcon(value);
 				setActiveIcon(value);
@@ -56,7 +50,7 @@ const App = () => {
 		}
 	};
 
-	// Html to png
+	// HTML to PNG
 	const ref = useRef(null);
 	const handleImageExport = useCallback(() => {
 		if (ref.current === null) {
@@ -84,41 +78,13 @@ const App = () => {
 				<div className='Sidebar px-8 pt-8 pb-[92px] lg:w-[26rem] border-r border-slate-200 relative overflow-y-auto'>
 					<div className='mb-6'>
 						<h6>Background Color</h6>
-						<div className='border border-slate-200 rounded-md p-3 w-full flex items-center'>
-							<div className='border border-slate-200 rounded-full p-1'>
-								<span
-									className='w-4 h-4 block rounded-full'
-									style={
-										backgroundColor !== ''
-											? { background: backgroundColor }
-											: { background: '#FFFFFF' }
-									}>
-									{backgroundColor === '' ? (
-										<X color='#d1d9e3' />
-									) : (
-										''
-									)}
-								</span>
-							</div>
-							<input
-								type='text'
-								placeholder='#FFFFFF'
-								className='w-full ml-4 focus:outline-none'
-								value={backgroundColor}
-								onChange={(e) =>
-									handleCardChange(
-										'backgroundColor',
-										e.target.value
-									)
-								}
-							/>
-						</div>
+						<InputColor placeholder='#FFFFFF' />
 					</div>
 
 					<div className='mb-6'>
 						<h6>Text</h6>
 						<div className='flex flex-col xs:flex-row gap-4 relative'>
-							<Input
+							<InputText
 								placeholder={'Your text'}
 								value={
 									cardText.length > 40

@@ -1,9 +1,9 @@
 import React from 'react';
-import { Fragment, useState } from 'react';
+import { Fragment } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
 import { Check, CaretDown } from '@phosphor-icons/react';
 
-import { useFontStore, fonts } from '../context/fontStore';
+import { useFontStore, fonts } from '../context';
 
 const Dropdown = () => {
 	const { selectedFont, setSelectedFont } = useFontStore();
@@ -32,8 +32,7 @@ const Dropdown = () => {
 						as={Fragment}
 						leave='transition ease-in duration-100'
 						leaveFrom='opacity-100'
-						leaveTo='opacity-0'
-					>
+						leaveTo='opacity-0'>
 						<Listbox.Options className='absolute mt-2 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm z-20'>
 							{fonts.map((font, fontIdx) => (
 								<Listbox.Option
@@ -49,8 +48,7 @@ const Dropdown = () => {
 									style={{
 										fontFamily: font.name,
 										fontWeight: font.weight,
-									}}
-								>
+									}}>
 									{({ selected }) => (
 										<>
 											<span
@@ -58,8 +56,7 @@ const Dropdown = () => {
 													selected
 														? 'font-medium'
 														: 'font-normal'
-												}`}
-											>
+												}`}>
 												{font.name}
 											</span>
 											{selected ? (
