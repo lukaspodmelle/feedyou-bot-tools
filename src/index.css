@@ -18,6 +18,9 @@
 	h2 {
 		@apply text-lg font-bold;
 	}
+	h6 {
+		@apply text-sm text-slate-500 mb-2;
+	}
 }
 
 /* Scrollbar */

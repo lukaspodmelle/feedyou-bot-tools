@@ -7,7 +7,7 @@ const Nav = () => {
 			<h1 className='text-slate-700'>Feedyou Bot Tools</h1>
 
 			<div className='flex items-center gap-3'>
-				<span className='text-xs text-slate-500 bg-slate-100 py-1 px-3 rounded-full'>
+				<span className='hidden sm:block text-xs text-slate-500 bg-slate-100 py-1 px-3 rounded-full'>
 					v1.0.0
 				</span>
 				<Info size={22} weight='bold' className='text-slate-700' />

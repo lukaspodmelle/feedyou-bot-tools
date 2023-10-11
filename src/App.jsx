@@ -1,9 +1,11 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { DownloadSimple, X, HandWaving } from '@phosphor-icons/react';
-import { Nav, Input, FontsDropdown, Warning } from './components';
 import { Switch } from '@headlessui/react';
-import phosphorIcons from './assets/phosphor-icons';
 import { toPng } from 'html-to-image';
+
+import { Nav, Input, FontsDropdown, Warning } from './components';
+
+import phosphorIcons from './assets/phosphor-icons';
 
 import { useFontStore } from './context/fontStore';
 
@@ -30,48 +32,36 @@ const App = () => {
 	// Stores
 	const { selectedFont } = useFontStore();
 
-	// Handler functions
-	const handleColorChange = (color) => {
-		setBackgroundColor(color);
-	};
-
-	const handleCardIconChange = (icon, index) => {
-		setCardIcon(icon);
-		setActiveIcon(icon);
-	};
-
-	const handleCardIconColorChange = (color) => {
-		setCardIconColor(color);
-	};
-
-	const handleCardTextChange = (text) => {
-		setCardText(text);
-	};
-
-	const handleCardTextColorChange = (color) => {
-		setCardTextColor(color);
-	};
-
-	const handleWarning = (type) => {
-		let warnMessage = '';
+	// Handler function
+	const handleCardChange = (type, value, index) => {
 		switch (type) {
-			case 'tooManyChars':
-				warnMessage = `You've reached the maximum amount of text for this field.`;
+			case 'backgroundColor':
+				setBackgroundColor(value);
+				break;
+			case 'cardIcon':
+				setCardIcon(value);
+				setActiveIcon(value);
+				break;
+			case 'cardIconColor':
+				setCardIconColor(value);
+				break;
+			case 'cardText':
+				setCardText(value);
+				break;
+			case 'cardTextColor':
+				setCardTextColor(value);
 				break;
 			default:
-				warnMessage = `This is a warning message.`;
+				break;
 		}
-		return <Warning message={warnMessage} />;
 	};
 
 	// Html to png
 	const ref = useRef(null);
-
 	const handleImageExport = useCallback(() => {
 		if (ref.current === null) {
 			return;
 		}
-
 		toPng(ref.current, {
 			cacheBust: true,
 			pixelRatio: 3,
@@ -90,12 +80,10 @@ const App = () => {
 	return (
 		<>
 			<Nav />
-			<div className='flex [height:calc(100vh-93px)] flex-col-reverse md:flex-row'>
-				<div className='Sidebar px-8 pt-8 pb-[92px] md:w-[26rem] border-r border-slate-200 relative overflow-y-auto'>
+			<div className='flex [height:calc(100vh-93px)] flex-col-reverse lg:flex-row'>
+				<div className='Sidebar px-8 pt-8 pb-[92px] lg:w-[26rem] border-r border-slate-200 relative overflow-y-auto'>
 					<div className='mb-6'>
-						<p className='text-sm text-slate-500 mb-2'>
-							Background Color
-						</p>
+						<h6>Background Color</h6>
 						<div className='border border-slate-200 rounded-md p-3 w-full flex items-center'>
 							<div className='border border-slate-200 rounded-full p-1'>
 								<span
@@ -118,15 +106,18 @@ const App = () => {
 								className='w-full ml-4 focus:outline-none'
 								value={backgroundColor}
 								onChange={(e) =>
-									handleColorChange(e.target.value)
+									handleCardChange(
+										'backgroundColor',
+										e.target.value
+									)
 								}
 							/>
 						</div>
 					</div>
 
 					<div className='mb-6'>
-						<p className='text-sm text-slate-500 mb-2'>Text</p>
-						<div className='flex gap-4 relative'>
+						<h6>Text</h6>
+						<div className='flex flex-col xs:flex-row gap-4 relative'>
 							<Input
 								placeholder={'Your text'}
 								value={
@@ -134,11 +125,10 @@ const App = () => {
 										? cardText.slice(0, 40)
 										: cardText
 								}
-								onInputChange={handleCardTextChange}
+								onInputChange={(value) =>
+									handleCardChange('cardText', value)
+								}
 							/>
-
-							{cardText.length > 40 &&
-								handleWarning('tooManyChars')}
 
 							<div className='border border-slate-200 rounded-md p-3  flex items-center'>
 								<div className='border border-slate-200 rounded-full p-1'>
@@ -159,7 +149,8 @@ const App = () => {
 									className='w-full ml-4 focus:outline-none'
 									value={cardTextColor}
 									onChange={(e) =>
-										handleCardTextColorChange(
+										handleCardChange(
+											'cardTextColor',
 											e.target.value
 										)
 									}
@@ -168,11 +159,11 @@ const App = () => {
 						</div>
 					</div>
 					<div className='mb-6'>
-						<p className='text-sm text-slate-500 mb-2'>Text Font</p>
+						<h6>Text Font</h6>
 						<FontsDropdown />
 					</div>
 					<div className='mb-6'>
-						<p className='text-sm text-slate-500 mb-2'>Icon</p>
+						<h6>Icon</h6>
 						<div className='IconPickerHead border border-slate-200 p-3 flex justify-between rounded-tl-md rounded-tr-md'>
 							<div className='flex items-center'>
 								<div className='border border-slate-200 rounded-full p-1'>
@@ -200,7 +191,8 @@ const App = () => {
 									} w-full ml-4 focus:outline-none`}
 									value={cardIconColor}
 									onChange={(e) =>
-										handleCardIconColorChange(
+										handleCardChange(
+											'cardIconColor',
 											e.target.value
 										)
 									}
@@ -224,12 +216,16 @@ const App = () => {
 						</div>
 
 						<div
-							className={`IconPickerBody p-3 border-b border-x border-slate-200 rounded-br-md rounded-bl-md grid grid-cols-5 gap-3 overflow-y-auto h-[18rem]`}>
+							className={`IconPickerBody p-3 border-b border-x border-slate-200 rounded-br-md rounded-bl-md grid grid-cols-3 xs:grid-cols-5 md:grid-cols-8 lg:grid-cols-5 gap-3 overflow-y-auto h-[18rem]`}>
 							{phosphorIcons.map((icon, index) => (
 								<button
 									key={index}
 									onClick={() =>
-										handleCardIconChange(icon.icon)
+										handleCardChange(
+											'cardIcon',
+											icon.icon,
+											index
+										)
 									}
 									className={`${
 										iconsEnabled
@@ -255,15 +251,15 @@ const App = () => {
 					</div>
 				</div>
 				<div
-					className='Export md:w-[26rem] bg-accent text-white text-xl absolute bottom-0 left-0 w-full p-8 cursor-pointer flex justify-center items-center gap-4'
+					className='Export lg:w-[26rem] bg-accent text-white text-xl absolute bottom-0 left-0 w-full p-8 cursor-pointer flex justify-center items-center gap-4 z-50'
 					onClick={handleImageExport}>
 					<span className='font-bold'>Export Image</span>
 					<DownloadSimple size={19} weight='bold' />
 				</div>
-				<div className='Editor p-12 flex flex-1 justify-center bg-slate-50'>
+				<div className='Editor xs:p-12 flex flex-1 justify-center bg-slate-50'>
 					<div
 						ref={ref}
-						className='Card w-[450px] h-[250px] flex items-center justify-center shrink-0 shadow-sm overflow-hidden'
+						className='Card scale-50 xs:scale-90 lg:scale-100 w-[450px] h-[250px] flex items-center justify-center shrink-0 shadow-sm overflow-hidden'
 						style={
 							backgroundColor !== ''
 								? { background: backgroundColor }
