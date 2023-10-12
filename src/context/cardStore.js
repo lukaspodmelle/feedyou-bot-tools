@@ -18,4 +18,13 @@ const useCardStore = create((set) => ({
 	textFont: cardDefaults.textFont,
 	icon: cardDefaults.icon,
 	iconColor: cardDefaults.iconColor,
+
+	setBackgroundColor: (value) => set({ backgroundColor: value }),
+	setText: (value) => set({ text: value }),
+	setTextColor: (value) => set({ textColor: value }),
+	setTextFont: (value) => set({ textFont: value }),
+	setIcon: (value) => set({ icon: value }),
+	setIconColor: (value) => set({ iconColor: value }),
 }));
+
+export { useCardStore };
