@@ -3,23 +3,23 @@ import { Fragment } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
 import { Check, CaretDown } from '@phosphor-icons/react';
 
-import { useFontStore, fonts } from '../context';
+import fonts from '../assets/fonts';
+
+import { useCardStore } from '../context';
 
 const Dropdown = () => {
-	const { selectedFont, setSelectedFont } = useFontStore();
+	const { textFont, setTextFont } = useCardStore();
 
 	const handleFontChange = (font) => {
-		setSelectedFont(font);
+		setTextFont(font);
 	};
 
 	return (
 		<div className='w-full'>
-			<Listbox value={selectedFont} onChange={handleFontChange}>
+			<Listbox value={textFont} onChange={handleFontChange}>
 				<div className='relative mt-1'>
 					<Listbox.Button className='relative w-full cursor-pointer border border-slate-200 rounded-md bg-white py-3 pl-3 pr-10 text-left focus:outline-none'>
-						<span className='block truncate'>
-							{selectedFont.name}
-						</span>
+						<span className='block truncate'>{textFont.name}</span>
 						<span className='pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-gray-400'>
 							<CaretDown
 								weight='bold'

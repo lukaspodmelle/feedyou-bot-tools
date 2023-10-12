@@ -2,10 +2,13 @@ import React, { useState, useRef, useEffect } from 'react';
 import { X } from '@phosphor-icons/react';
 import { HexColorPicker } from 'react-colorful';
 
-import { useBackgroundColorStore } from '../context';
+import { useCardStore } from '../context';
 
 const InputColor = ({ placeholder }) => {
-	const { backgroundColor, setBackgroundColor } = useBackgroundColorStore();
+	// Color store
+	const { backgroundColor, setBackgroundColor } = useCardStore();
+
+	// Color picker
 	const [openColorPicker, setOpenColorPicker] = useState(false);
 	const colorPickerRef = useRef(null);
 	const colorPickerSwatchRef = useRef(null);
@@ -28,6 +31,7 @@ const InputColor = ({ placeholder }) => {
 		}
 	};
 
+	// Handler function for color change
 	const handleBackgroundChange = (color) => {
 		setBackgroundColor(color);
 	};

@@ -6,48 +6,23 @@ import { toPng } from 'html-to-image';
 import { Nav, InputText, FontsDropdown, InputColor } from './components';
 import phosphorIcons from './assets/phosphor-icons';
 
-import { useFontStore, useBackgroundColorStore } from './context';
+import { useCardStore } from './context';
 
 const App = () => {
-	// Defaults
-	const defaults = {
-		cardIcon: HandWaving,
-		cardIconColor: '#FFFFFF',
-		cardTextColor: '#FFFFFF',
-	};
-
-	// States
-	const [CardIcon, setCardIcon] = useState(defaults.cardIcon);
-	const [cardIconColor, setCardIconColor] = useState(defaults.cardIconColor);
-	const [activeIcon, setActiveIcon] = useState(defaults.cardIcon);
-	const [iconsEnabled, setIconsEnabled] = useState(true);
-	const [cardText, setCardText] = useState('');
-	const [cardTextColor, setCardTextColor] = useState(defaults.cardTextColor);
-
-	// Stores
-	const { selectedFont } = useFontStore();
-	const { backgroundColor } = useBackgroundColorStore();
-
-	// Handler functions
-	const handleCardChange = (type, value, index) => {
-		switch (type) {
-			case 'cardIcon':
-				setCardIcon(value);
-				setActiveIcon(value);
-				break;
-			case 'cardIconColor':
-				setCardIconColor(value);
-				break;
-			case 'cardText':
-				setCardText(value);
-				break;
-			case 'cardTextColor':
-				setCardTextColor(value);
-				break;
-			default:
-				break;
-		}
-	};
+	const {
+		backgroundColor,
+		text,
+		setText,
+		textColor,
+		setTextColor,
+		textFont,
+		Icon,
+		setIcon,
+		iconColor,
+		setIconColor,
+		iconsEnabled,
+		setIconsEnabled,
+	} = useCardStore();
 
 	// HTML to PNG
 	const ref = useRef(null);
@@ -86,13 +61,9 @@ const App = () => {
 							<InputText
 								placeholder={'Your text'}
 								value={
-									cardText.length > 40
-										? cardText.slice(0, 40)
-										: cardText
+									text.length > 40 ? text.slice(0, 40) : text
 								}
-								onInputChange={(value) =>
-									handleCardChange('cardText', value)
-								}
+								onInputChange={(value) => setText(value)}
 							/>
 
 							<div className='border border-slate-200 rounded-md p-3  flex items-center'>
@@ -100,11 +71,10 @@ const App = () => {
 									<span
 										className='w-4 h-4 block rounded-full'
 										style={
-											cardTextColor !== ''
-												? { background: cardTextColor }
+											textColor !== ''
+												? { background: textColor }
 												: {
-														background:
-															defaults.cardTextColor,
+														background: 'black',
 												  }
 										}></span>
 								</div>
@@ -112,12 +82,9 @@ const App = () => {
 									type='text'
 									placeholder='#FFFFFF'
 									className='w-full ml-4 focus:outline-none'
-									value={cardTextColor}
+									value={textColor}
 									onChange={(e) =>
-										handleCardChange(
-											'cardTextColor',
-											e.target.value
-										)
+										setTextColor(e.target.value)
 									}
 								/>
 							</div>
@@ -135,11 +102,11 @@ const App = () => {
 									<span
 										className='w-4 h-4 block rounded-full'
 										style={
-											cardIconColor !== ''
-												? { background: cardIconColor }
+											iconColor !== ''
+												? { background: iconColor }
 												: { background: '#FFFFFF' }
 										}>
-										{cardIconColor === '' ? (
+										{iconColor === '' ? (
 											<X color='#d1d9e3' />
 										) : (
 											''
@@ -154,12 +121,9 @@ const App = () => {
 											? ''
 											: 'disabled:text-slate-300 disabled:bg-transparent'
 									} w-full ml-4 focus:outline-none`}
-									value={cardIconColor}
+									value={iconColor}
 									onChange={(e) =>
-										handleCardChange(
-											'cardIconColor',
-											e.target.value
-										)
+										setIconColor(e.target.value)
 									}
 									disabled={!iconsEnabled && 'disabled'}
 								/>
@@ -185,16 +149,10 @@ const App = () => {
 							{phosphorIcons.map((icon, index) => (
 								<button
 									key={index}
-									onClick={() =>
-										handleCardChange(
-											'cardIcon',
-											icon.icon,
-											index
-										)
-									}
+									onClick={() => setIcon(icon.icon)}
 									className={`${
 										iconsEnabled
-											? icon.icon === activeIcon
+											? icon.icon === Icon
 												? 'border-accent focus:outline-accent'
 												: 'border-slate-200 hover:border-slate-300 hover:border-2 focus:outline-slate-300'
 											: ' pointer-events-none cursor-not-allowed'
@@ -204,7 +162,7 @@ const App = () => {
 										size={26}
 										color={
 											iconsEnabled
-												? icon.icon === activeIcon
+												? icon.icon === Icon
 													? '#006cf8'
 													: '#475569'
 												: '#cbd5e1'
@@ -232,10 +190,10 @@ const App = () => {
 						}>
 						<div className='flex flex-col gap-2 justify-center items-center max-w-[70%]'>
 							{iconsEnabled ? (
-								<CardIcon
+								<Icon
 									size={100}
 									weight='duotone'
-									color={cardIconColor}
+									color={iconColor}
 								/>
 							) : (
 								''
@@ -244,17 +202,17 @@ const App = () => {
 							<span
 								className='text-3xl text-center'
 								style={
-									cardTextColor !== ''
+									textColor !== ''
 										? {
-												color: cardTextColor,
-												fontFamily: selectedFont.name,
+												color: textColor,
+												fontFamily: textFont.name,
 										  }
 										: {
-												color: defaults.cardTextColor,
-												fontFamily: selectedFont.name,
+												color: 'black',
+												fontFamily: textFont.name,
 										  }
 								}>
-								{cardText}
+								{text}
 							</span>
 						</div>
 					</div>
