@@ -11,7 +11,6 @@ import { useFontStore, useBackgroundColorStore } from './context';
 const App = () => {
 	// Defaults
 	const defaults = {
-		backgroundColor: '#006cf8',
 		cardIcon: HandWaving,
 		cardIconColor: '#FFFFFF',
 		cardTextColor: '#FFFFFF',
