@@ -11,20 +11,18 @@ import { useCardStore } from './context';
 const App = () => {
 	const {
 		backgroundColor,
-		setBackgroundColor,
 		text,
 		setText,
 		textColor,
 		setTextColor,
 		textFont,
-		setTextFont,
-		icon,
+		Icon,
 		setIcon,
 		iconColor,
 		setIconColor,
+		iconsEnabled,
+		setIconsEnabled,
 	} = useCardStore();
-
-	const [iconsEnabled, setIconsEnabled] = useState(true);
 
 	// HTML to PNG
 	const ref = useRef(null);
@@ -125,10 +123,7 @@ const App = () => {
 									} w-full ml-4 focus:outline-none`}
 									value={iconColor}
 									onChange={(e) =>
-										handleCardChange(
-											'cardIconColor',
-											e.target.value
-										)
+										setIconColor(e.target.value)
 									}
 									disabled={!iconsEnabled && 'disabled'}
 								/>
@@ -154,16 +149,10 @@ const App = () => {
 							{phosphorIcons.map((icon, index) => (
 								<button
 									key={index}
-									onClick={() =>
-										handleCardChange(
-											'cardIcon',
-											icon.icon,
-											index
-										)
-									}
+									onClick={() => setIcon(icon.icon)}
 									className={`${
 										iconsEnabled
-											? icon.icon === activeIcon
+											? icon.icon === Icon
 												? 'border-accent focus:outline-accent'
 												: 'border-slate-200 hover:border-slate-300 hover:border-2 focus:outline-slate-300'
 											: ' pointer-events-none cursor-not-allowed'
@@ -173,7 +162,7 @@ const App = () => {
 										size={26}
 										color={
 											iconsEnabled
-												? icon.icon === activeIcon
+												? icon.icon === Icon
 													? '#006cf8'
 													: '#475569'
 												: '#cbd5e1'
@@ -201,7 +190,7 @@ const App = () => {
 						}>
 						<div className='flex flex-col gap-2 justify-center items-center max-w-[70%]'>
 							{iconsEnabled ? (
-								<CardIcon
+								<Icon
 									size={100}
 									weight='duotone'
 									color={iconColor}

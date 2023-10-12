@@ -2,12 +2,14 @@ import { create } from 'zustand';
 import fonts from '../assets/fonts';
 import phosphorIcons from '../assets/phosphor-icons';
 
+const randomIndex = Math.floor(Math.random() * phosphorIcons.length);
+
 const cardDefaults = {
 	backgroundColor: '#006cf8',
 	text: '',
 	textColor: '#FFFFFF',
 	textFont: fonts[0],
-	icon: phosphorIcons[0].icon,
+	Icon: phosphorIcons[randomIndex].icon,
 	iconColor: '#FFFFFF',
 };
 
@@ -16,15 +18,17 @@ const useCardStore = create((set) => ({
 	text: cardDefaults.text,
 	textColor: cardDefaults.textColor,
 	textFont: cardDefaults.textFont,
-	icon: cardDefaults.icon,
+	Icon: cardDefaults.Icon,
 	iconColor: cardDefaults.iconColor,
+	iconsEnabled: true,
 
 	setBackgroundColor: (value) => set({ backgroundColor: value }),
 	setText: (value) => set({ text: value }),
 	setTextColor: (value) => set({ textColor: value }),
 	setTextFont: (value) => set({ textFont: value }),
-	setIcon: (value) => set({ icon: value }),
+	setIcon: (value) => set({ Icon: value }),
 	setIconColor: (value) => set({ iconColor: value }),
+	setIconsEnabled: (value) => set({ iconsEnabled: value }),
 }));
 
 export { useCardStore };
