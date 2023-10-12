@@ -12,6 +12,9 @@
 	html {
 		@apply font-sans;
 	}
+	body {
+		@apply overscroll-none;
+	}
 	h1 {
 		@apply text-xl font-bold;
 	}
@@ -24,7 +27,6 @@
 }
 
 /* Scrollbar */
-
 ::-webkit-scrollbar {
 	width: 7px;
 }
@@ -38,10 +40,7 @@
 	@apply bg-slate-300;
 }
 
-body {
-	overscroll-behavior: none;
-}
-
+/* Editor BG */
 .Editor {
 	background-image: linear-gradient(
 		45deg,
@@ -54,4 +53,10 @@ body {
 		transparent
 	);
 	background-size: 10px 10px;
+}
+
+/* Color picker */
+.react-colorful {
+	width: 150px !important;
+	height: 150px !important;
 }

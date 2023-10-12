@@ -11,6 +11,7 @@ import { useCardStore } from './context';
 const App = () => {
 	const {
 		backgroundColor,
+		setBackgroundColor,
 		text,
 		setText,
 		textColor,
@@ -49,10 +50,14 @@ const App = () => {
 		<>
 			<Nav />
 			<div className='flex [height:calc(100vh-93px)] flex-col-reverse lg:flex-row'>
-				<div className='Sidebar px-8 pt-8 pb-[92px] lg:w-[26rem] border-r border-slate-200 relative overflow-y-auto'>
+				<div className='Sidebar px-8 pt-8 pb-[92px] lg:w-[26rem] border-r border-slate-200 overflow-y-auto'>
 					<div className='mb-6'>
 						<h6>Background Color</h6>
-						<InputColor placeholder='#FFFFFF' />
+						<InputColor
+							placeholder='#FFFFFF'
+							color={backgroundColor}
+							onInputChange={(value) => setBackgroundColor(value)}
+						/>
 					</div>
 
 					<div className='mb-6'>
@@ -65,29 +70,11 @@ const App = () => {
 								}
 								onInputChange={(value) => setText(value)}
 							/>
-
-							<div className='border border-slate-200 rounded-md p-3  flex items-center'>
-								<div className='border border-slate-200 rounded-full p-1'>
-									<span
-										className='w-4 h-4 block rounded-full'
-										style={
-											textColor !== ''
-												? { background: textColor }
-												: {
-														background: 'black',
-												  }
-										}></span>
-								</div>
-								<input
-									type='text'
-									placeholder='#FFFFFF'
-									className='w-full ml-4 focus:outline-none'
-									value={textColor}
-									onChange={(e) =>
-										setTextColor(e.target.value)
-									}
-								/>
-							</div>
+							<InputColor
+								placeholder='#FFFFFF'
+								color={textColor}
+								onInputChange={(value) => setTextColor(value)}
+							/>
 						</div>
 					</div>
 					<div className='mb-6'>
@@ -97,37 +84,12 @@ const App = () => {
 					<div className='mb-6'>
 						<h6>Icon</h6>
 						<div className='IconPickerHead border border-slate-200 p-3 flex justify-between rounded-tl-md rounded-tr-md'>
-							<div className='flex items-center'>
-								<div className='border border-slate-200 rounded-full p-1'>
-									<span
-										className='w-4 h-4 block rounded-full'
-										style={
-											iconColor !== ''
-												? { background: iconColor }
-												: { background: '#FFFFFF' }
-										}>
-										{iconColor === '' ? (
-											<X color='#d1d9e3' />
-										) : (
-											''
-										)}
-									</span>
-								</div>
-								<input
-									type='text'
-									placeholder='#000000'
-									className={`${
-										iconsEnabled
-											? ''
-											: 'disabled:text-slate-300 disabled:bg-transparent'
-									} w-full ml-4 focus:outline-none`}
-									value={iconColor}
-									onChange={(e) =>
-										setIconColor(e.target.value)
-									}
-									disabled={!iconsEnabled && 'disabled'}
-								/>
-							</div>
+							<InputColor
+								placeholder='#000000'
+								color={iconColor}
+								onInputChange={(value) => setIconColor(value)}
+								style='plain'
+							/>
 							<Switch
 								checked={iconsEnabled}
 								onChange={setIconsEnabled}

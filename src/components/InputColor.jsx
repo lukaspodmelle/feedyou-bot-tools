@@ -2,12 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { X } from '@phosphor-icons/react';
 import { HexColorPicker } from 'react-colorful';
 
-import { useCardStore } from '../context';
-
-const InputColor = ({ placeholder }) => {
-	// Color store
-	const { backgroundColor, setBackgroundColor } = useCardStore();
-
+const InputColor = ({ placeholder, color, style, onInputChange }) => {
 	// Color picker
 	const [openColorPicker, setOpenColorPicker] = useState(false);
 	const colorPickerRef = useRef(null);
@@ -31,26 +26,24 @@ const InputColor = ({ placeholder }) => {
 		}
 	};
 
-	// Handler function for color change
-	const handleBackgroundChange = (color) => {
-		setBackgroundColor(color);
-	};
-
 	return (
-		<div className='border border-slate-200 rounded-md p-3 w-full flex items-center'>
+		<div
+			className={`${
+				style == null ? 'border border-slate-200 rounded-md p-3' : ''
+			}  flex items-center`}>
 			<div className='border border-slate-200 rounded-full p-1 relative'>
 				<span
 					ref={colorPickerSwatchRef}
 					className='w-4 h-4 block rounded-full hover:cursor-pointer'
 					style={
-						backgroundColor !== ''
-							? { background: backgroundColor }
+						color !== ''
+							? { background: color }
 							: { background: '#FFFFFF' }
 					}
 					onClick={() =>
 						setOpenColorPicker((prevState) => !prevState)
 					}>
-					{backgroundColor === '' ? <X color='#d1d9e3' /> : ''}
+					{color === '' ? <X color='#d1d9e3' /> : ''}
 				</span>
 				<div
 					ref={colorPickerRef}
@@ -59,10 +52,7 @@ const InputColor = ({ placeholder }) => {
 							? 'block opacity-100'
 							: 'hidden opacity-0'
 					} absolute top-8 left-0 z-40`}>
-					<HexColorPicker
-						color={backgroundColor}
-						onChange={handleBackgroundChange}
-					/>
+					<HexColorPicker color={color} onChange={onInputChange} />
 				</div>
 			</div>
 
@@ -70,8 +60,8 @@ const InputColor = ({ placeholder }) => {
 				type='text'
 				placeholder={placeholder}
 				className='w-full ml-4 focus:outline-none'
-				value={backgroundColor}
-				onChange={(e) => handleBackgroundChange(e.target.value)}
+				value={color}
+				onChange={(e) => onInputChange(e.target.value)}
 			/>
 		</div>
 	);
