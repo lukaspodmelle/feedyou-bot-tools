@@ -2,7 +2,13 @@ import React, { useState, useRef, useEffect } from 'react';
 import { X } from '@phosphor-icons/react';
 import { HexColorPicker } from 'react-colorful';
 
-const InputColor = ({ placeholder, color, style, onInputChange }) => {
+const InputColor = ({
+	placeholder,
+	color,
+	style,
+	isDisabled = false,
+	onInputChange,
+}) => {
 	// Color picker
 	const [openColorPicker, setOpenColorPicker] = useState(false);
 	const colorPickerRef = useRef(null);
@@ -45,6 +51,7 @@ const InputColor = ({ placeholder, color, style, onInputChange }) => {
 					}>
 					{color === '' ? <X color='#d1d9e3' /> : ''}
 				</span>
+
 				<div
 					ref={colorPickerRef}
 					className={`${
@@ -58,8 +65,9 @@ const InputColor = ({ placeholder, color, style, onInputChange }) => {
 
 			<input
 				type='text'
+				disabled={isDisabled}
 				placeholder={placeholder}
-				className='w-full ml-4 focus:outline-none'
+				className='w-full ml-4 focus:outline-none disabled:text-slate-300 disabled:bg-transparent'
 				value={color}
 				onChange={(e) => onInputChange(e.target.value)}
 			/>

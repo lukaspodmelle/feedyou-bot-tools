@@ -3,23 +3,13 @@ import { Fragment } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
 import { Check, CaretDown } from '@phosphor-icons/react';
 
-import fonts from '../assets/fonts';
-
-import { useCardStore } from '../context';
-
-const Dropdown = () => {
-	const { textFont, setTextFont } = useCardStore();
-
-	const handleFontChange = (font) => {
-		setTextFont(font);
-	};
-
+const Dropdown = ({ items, selected, onDropdownChange }) => {
 	return (
 		<div className='w-full'>
-			<Listbox value={textFont} onChange={handleFontChange}>
+			<Listbox value={selected} onChange={onDropdownChange}>
 				<div className='relative mt-1'>
 					<Listbox.Button className='relative w-full cursor-pointer border border-slate-200 rounded-md bg-white py-3 pl-3 pr-10 text-left focus:outline-none'>
-						<span className='block truncate'>{textFont.name}</span>
+						<span className='block truncate'>{selected.name}</span>
 						<span className='pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-gray-400'>
 							<CaretDown
 								weight='bold'
@@ -34,9 +24,9 @@ const Dropdown = () => {
 						leaveFrom='opacity-100'
 						leaveTo='opacity-0'>
 						<Listbox.Options className='absolute mt-2 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm z-20'>
-							{fonts.map((font, fontIdx) => (
+							{items.map((item, index) => (
 								<Listbox.Option
-									key={fontIdx}
+									key={index}
 									className={({ active }) =>
 										`relative cursor-pointer select-none py-2 pl-10 pr-4 ${
 											active
@@ -44,20 +34,15 @@ const Dropdown = () => {
 												: 'text-gray-900'
 										}`
 									}
-									value={font}
+									value={item}
 									style={{
-										fontFamily: font.name,
-										fontWeight: font.weight,
+										fontFamily: item.name,
+										fontWeight: item.weight,
 									}}>
 									{({ selected }) => (
 										<>
-											<span
-												className={`block truncate ${
-													selected
-														? 'font-medium'
-														: 'font-normal'
-												}`}>
-												{font.name}
+											<span className={`block truncate`}>
+												{item.name}
 											</span>
 											{selected ? (
 												<span className='absolute inset-y-0 left-0 flex items-center pl-3 text-accent'>

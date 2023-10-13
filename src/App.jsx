@@ -1,14 +1,16 @@
-import React, { useState, useCallback, useRef } from 'react';
-import { DownloadSimple, X, HandWaving } from '@phosphor-icons/react';
+import React, { useCallback, useRef } from 'react';
+import { DownloadSimple } from '@phosphor-icons/react';
 import { Switch } from '@headlessui/react';
 import { toPng } from 'html-to-image';
 
-import { Nav, InputText, FontsDropdown, InputColor } from './components';
+import { Nav, InputText, Dropdown, InputColor } from './components';
 import phosphorIcons from './assets/phosphor-icons';
+import fonts from './assets/fonts';
 
 import { useCardStore } from './context';
 
 const App = () => {
+	// Stores
 	const {
 		backgroundColor,
 		setBackgroundColor,
@@ -17,6 +19,7 @@ const App = () => {
 		textColor,
 		setTextColor,
 		textFont,
+		setTextFont,
 		Icon,
 		setIcon,
 		iconColor,
@@ -65,9 +68,8 @@ const App = () => {
 						<div className='flex flex-col xs:flex-row gap-4 relative'>
 							<InputText
 								placeholder={'Your text'}
-								value={
-									text.length > 40 ? text.slice(0, 40) : text
-								}
+								value={text}
+								maxLength={40}
 								onInputChange={(value) => setText(value)}
 							/>
 							<InputColor
@@ -77,10 +79,16 @@ const App = () => {
 							/>
 						</div>
 					</div>
+
 					<div className='mb-6'>
 						<h6>Text Font</h6>
-						<FontsDropdown />
+						<Dropdown
+							items={fonts}
+							selected={textFont}
+							onDropdownChange={(value) => setTextFont(value)}
+						/>
 					</div>
+
 					<div className='mb-6'>
 						<h6>Icon</h6>
 						<div className='IconPickerHead border border-slate-200 p-3 flex justify-between rounded-tl-md rounded-tr-md'>
@@ -89,6 +97,7 @@ const App = () => {
 								color={iconColor}
 								onInputChange={(value) => setIconColor(value)}
 								style='plain'
+								isDisabled={!iconsEnabled}
 							/>
 							<Switch
 								checked={iconsEnabled}
@@ -122,12 +131,12 @@ const App = () => {
 									<icon.icon
 										weight='duotone'
 										size={26}
-										color={
+										className={
 											iconsEnabled
 												? icon.icon === Icon
-													? '#006cf8'
-													: '#475569'
-												: '#cbd5e1'
+													? 'text-accent'
+													: 'text-slate-600'
+												: 'text-slate-300'
 										}
 									/>
 								</button>
@@ -135,12 +144,14 @@ const App = () => {
 						</div>
 					</div>
 				</div>
+
 				<div
 					className='Export lg:w-[26rem] bg-accent text-white text-xl absolute bottom-0 left-0 w-full p-8 cursor-pointer flex justify-center items-center gap-4 z-50'
 					onClick={handleImageExport}>
 					<span className='font-bold'>Export Image</span>
 					<DownloadSimple size={19} weight='bold' />
 				</div>
+
 				<div className='Editor xs:p-12 flex flex-1 justify-center bg-slate-50'>
 					<div
 						ref={ref}
@@ -163,17 +174,11 @@ const App = () => {
 
 							<span
 								className='text-3xl text-center'
-								style={
-									textColor !== ''
-										? {
-												color: textColor,
-												fontFamily: textFont.name,
-										  }
-										: {
-												color: 'black',
-												fontFamily: textFont.name,
-										  }
-								}>
+								style={{
+									color: textColor,
+									fontFamily: textFont.name,
+									fontWeight: textFont.weight,
+								}}>
 								{text}
 							</span>
 						</div>

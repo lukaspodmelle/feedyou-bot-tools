@@ -1,5 +1,5 @@
 const fonts = [
-	{ name: 'Manrope', weight: '300' },
+	{ name: 'Manrope', weight: '700' },
 	{ name: 'Montserrat', weight: '300' },
 	{ name: 'Inter', weight: '300' },
 	{ name: 'Playfair Display', weight: '700' },
