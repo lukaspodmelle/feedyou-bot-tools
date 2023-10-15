@@ -4,3 +4,4 @@ export { default as Dropdown } from './Dropdown';
 export { default as Warning } from './Warning';
 export { default as InputColor } from './InputColor';
 export { default as Chip } from './Chip';
+export { default as MenuDropdown } from './MenuDropdown';
