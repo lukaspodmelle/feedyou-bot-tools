@@ -8,7 +8,7 @@ const Nav = () => {
 		<div className='flex justify-between p-8 border-b border-slate-200 relative'>
 			<div className='flex items-center gap-4'>
 				<h1 className='text-slate-700'>Feedyou Bot Tools</h1>
-				<MenuDropdown />
+				{/* <MenuDropdown /> */}
 			</div>
 
 			<div className='flex items-center gap-3'>

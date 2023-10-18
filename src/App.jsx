@@ -52,7 +52,7 @@ const App = () => {
 	return (
 		<>
 			<Nav />
-			<div className='flex [height:calc(100vh-105px)] flex-col-reverse lg:flex-row'>
+			<div className='flex [height:calc(100vh-93px)] flex-col-reverse lg:flex-row'>
 				<div className='Sidebar px-8 pt-8 pb-[92px] lg:w-[26rem] border-r border-slate-200 overflow-y-auto'>
 					<div className='mb-6'>
 						<h6>Background Color</h6>
@@ -104,8 +104,7 @@ const App = () => {
 								onChange={setIconsEnabled}
 								className={`${
 									iconsEnabled ? 'bg-accent' : 'bg-slate-200'
-								} relative inline-flex h-6 w-11 items-center rounded-full`}
-							>
+								} relative inline-flex h-6 w-11 items-center rounded-full`}>
 								<span
 									className={`${
 										iconsEnabled
@@ -117,8 +116,7 @@ const App = () => {
 						</div>
 
 						<div
-							className={`IconPickerBody p-3 border-b border-x border-slate-200 rounded-br-md rounded-bl-md grid grid-cols-3 xs:grid-cols-5 md:grid-cols-8 lg:grid-cols-5 gap-3 overflow-y-auto h-[18rem]`}
-						>
+							className={`IconPickerBody p-3 border-b border-x border-slate-200 rounded-br-md rounded-bl-md grid grid-cols-3 xs:grid-cols-5 md:grid-cols-8 lg:grid-cols-5 gap-3 overflow-y-auto h-[18rem]`}>
 							{phosphorIcons.map((icon, index) => (
 								<button
 									key={index}
@@ -129,8 +127,7 @@ const App = () => {
 												? 'border-accent focus:outline-accent'
 												: 'border-slate-200 hover:border-slate-300 hover:border-2 focus:outline-slate-300'
 											: ' pointer-events-none cursor-not-allowed'
-									} border-2 p-3 rounded-md aspect-square flex justify-center items-center`}
-								>
+									} border-2 p-3 rounded-md aspect-square flex justify-center items-center`}>
 									<icon.icon
 										weight='duotone'
 										size={26}
@@ -150,8 +147,7 @@ const App = () => {
 
 				<div
 					className='Export lg:w-[26rem] bg-accent text-white text-xl absolute bottom-0 left-0 w-full p-8 cursor-pointer flex justify-center items-center gap-4 z-50'
-					onClick={handleImageExport}
-				>
+					onClick={handleImageExport}>
 					<span className='font-bold'>Export Image</span>
 					<DownloadSimple size={19} weight='bold' />
 				</div>
@@ -164,8 +160,7 @@ const App = () => {
 							backgroundColor !== ''
 								? { background: backgroundColor }
 								: { background: '#FFFFFF' }
-						}
-					>
+						}>
 						<div className='flex flex-col gap-2 justify-center items-center max-w-[70%]'>
 							{iconsEnabled ? (
 								<Icon
@@ -183,8 +178,7 @@ const App = () => {
 									color: textColor,
 									fontFamily: textFont.name,
 									fontWeight: textFont.weight,
-								}}
-							>
+								}}>
 								{text}
 							</span>
 						</div>
