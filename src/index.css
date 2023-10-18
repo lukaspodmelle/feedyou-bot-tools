@@ -24,6 +24,9 @@
 	h6 {
 		@apply text-sm text-slate-500 mb-2;
 	}
+	input {
+		@apply text-slate-700;
+	}
 }
 
 /* Scrollbar */
