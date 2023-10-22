@@ -10,11 +10,6 @@ const Nav = () => {
 				<h1 className='text-slate-700'>Feedyou Bot Tools</h1>
 				{/* <MenuDropdown /> */}
 			</div>
-
-			<div className='flex items-center gap-3'>
-				<Chip text='v1.0.0' />
-				{/* <Info size={22} weight='bold' className='text-slate-700' /> */}
-			</div>
 		</div>
 	);
 };
