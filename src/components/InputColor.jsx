@@ -67,7 +67,7 @@ const InputColor = ({
 				type='text'
 				disabled={isDisabled}
 				placeholder={placeholder}
-				className='w-full ml-4 focus:outline-none disabled:text-slate-300 disabled:bg-transparent'
+				className='w-full ml-4 focus:outline-none disabled:text-slate-300 disabled:bg-transparent border-none p-0 m-0'
 				value={color}
 				onChange={(e) => onInputChange(e.target.value)}
 			/>
