@@ -26,9 +26,35 @@ const Translator = () => {
 	const [workbook, setWorkbook] = useState();
 	const [fileName, setFileName] = useState();
 
+	// Fetch translation
+	const [loading, setLoading] = useState(false);
+	const [data, setData] = useState();
+	const fetchTranslation = async () => {
+		setLoading(true);
+		try {
+			const options = {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: '[["dobrý den","jak se máte?"],"PL"]',
+			};
+			const response = await fetch(
+				'https://feedyou-bot-tools-api.vercel.app/api/v1/deepl',
+				options
+			);
+			const result = await response.json();
+			setData(result);
+
+			console.log(result);
+		} catch (error) {
+			console.log(error);
+		} finally {
+			setLoading(false);
+		}
+	};
+
 	// Handle translation
 	const handleTranslation = () => {
-		const translatedTexts = demoDeepl.translations.map(
+		const translatedTexts = data.translations.map(
 			(translation) => translation.text
 		);
 		const translatedJsonData = [...jsonData];
@@ -85,9 +111,14 @@ const Translator = () => {
 				Translated: / {jsonData.length}
 				<div className='absolute bottom-4 right-4 flex flex-col gap-2'>
 					<button
+						onClick={fetchTranslation}
+						className='bg-black text-white p-2 rounded-full'>
+						Fetch translation
+					</button>
+					<button
 						onClick={handleTranslation}
 						className='bg-black text-white p-2 rounded-full'>
-						Handle translation
+						Fill translations
 					</button>
 					<button
 						onClick={prepareForTranslation}
