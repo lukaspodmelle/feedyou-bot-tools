@@ -24,8 +24,7 @@ const Dropdown = ({ items, selected, onDropdownChange }) => {
 						as={Fragment}
 						leave='transition ease-in duration-100'
 						leaveFrom='opacity-100'
-						leaveTo='opacity-0'
-					>
+						leaveTo='opacity-0'>
 						<Listbox.Options className='absolute mt-2 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm z-20'>
 							{items.map((item, index) => (
 								<Listbox.Option
@@ -39,15 +38,13 @@ const Dropdown = ({ items, selected, onDropdownChange }) => {
 									}
 									value={item}
 									style={{
-										fontFamily: item.name,
-										fontWeight: item.weight,
-									}}
-								>
+										fontFamily: item.name || 'inherit',
+										fontWeight: item.weight || 'inherit',
+									}}>
 									{({ selected }) => (
 										<>
 											<span
-												className={`block truncate text-slate-700`}
-											>
+												className={`block truncate text-slate-700`}>
 												{item.name}
 											</span>
 											{selected ? (

@@ -16,10 +16,10 @@
 		@apply overscroll-none;
 	}
 	h1 {
-		@apply text-xl font-bold;
+		@apply text-xl font-bold text-slate-700;
 	}
 	h2 {
-		@apply text-lg font-bold;
+		@apply text-lg font-bold text-slate-700;
 	}
 	h6 {
 		@apply text-sm text-slate-500 mb-2;
