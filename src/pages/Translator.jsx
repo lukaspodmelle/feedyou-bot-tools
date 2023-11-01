@@ -1,9 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import ReactPaginate from 'react-paginate';
 import XLSX from 'xlsx';
 
-import { FileArrowUp, DownloadSimple } from '@phosphor-icons/react';
+import {
+	FileArrowUp,
+	DownloadSimple,
+	CaretLeft,
+	CaretRight,
+	CircleNotch,
+} from '@phosphor-icons/react';
 
-import { Checkbox, Dropdown } from '../components';
+import { Checkbox, Dropdown, LoadingSpinner } from '../components';
+import { languages } from '../assets/deepl-languages';
 
 const Translator = () => {
 	const [jsonData, setJsonData] = useState([]);
@@ -13,6 +21,22 @@ const Translator = () => {
 	const [loadingTranslation, setLoadingTranslation] = useState(false);
 	const [isDragging, setIsDragging] = useState(false);
 	const [targetLanguage, setTargetLanguage] = useState('PL');
+	const [currentPage, setCurrentPage] = useState(0);
+	const [fixed, setFixed] = useState(false);
+
+	// Tool bar scrolling
+	useEffect(() => {
+		const handleScroll = () => {
+			const scrollY = window.scrollY;
+
+			const threshold = 93; // height of navbar in px
+			setFixed(scrollY >= threshold);
+		};
+		window.addEventListener('scroll', handleScroll);
+		return () => {
+			window.removeEventListener('scroll', handleScroll);
+		};
+	}, []);
 
 	// Handle translation
 	const handleTranslation = async () => {
@@ -130,11 +154,70 @@ const Translator = () => {
 		console.log(jsonData.map((obj) => obj.value));
 	};
 
+	// Display data & pagination
+	const itemsPerPage = 10;
+	const pageCount = Math.ceil(jsonData.length / itemsPerPage);
+	const offset = currentPage * itemsPerPage;
+	const currentItems = jsonData.slice(offset, offset + itemsPerPage);
+	const handlePageChange = ({ selected }) => {
+		setCurrentPage(selected);
+	};
+	const renderItems = currentItems.map((item, index) => (
+		<div
+			key={index}
+			className='TranslationCard bg-white text-slate-700 border border-slate-200 rounded-md mb-4 shadow-sm'>
+			<div className='flex justify-between py-4 px-6 border-b border-slate-200'>
+				<div className='flex gap-8'>
+					<div className='flex flex-col'>
+						<h6 className='m-0'>Step ID</h6>
+						<span className='font-bold'>{item.stepId}</span>
+					</div>
+					<div className='flex flex-col'>
+						<h6 className='m-0'>Type</h6>
+						<span className='font-bold capitalize'>
+							{item.stepType}
+						</span>
+					</div>
+				</div>
+				<div className='flex items-center gap-4'>
+					<Checkbox
+						onCheckboxChange={(e) =>
+							handleCheck(index, e.target.checked)
+						}
+					/>
+					Translation complete
+				</div>
+			</div>
+
+			<div className='md:flex'>
+				<div className='Original p-6 md:border-r border-slate-200 bg-slate-50 text-slate-400 flex-1 rounded-bl-md'>
+					{item.value}
+				</div>
+				<div className='Translation p-6 flex-1'>
+					<textarea
+						rows={1}
+						className='w-full h-full min-h-full focus:outline-none'
+						type='text'
+						name='translation'
+						placeholder='Start translating...'
+						value={item.translation}
+						onChange={(e) =>
+							handleInputChange(e.target.value, index)
+						}
+					/>
+				</div>
+			</div>
+		</div>
+	));
+
 	return (
 		<>
 			{jsonData == '' ? null : (
-				<div className='bg-white border-b border-slate-200 w-full p-4 flex justify-center'>
-					<div className='max-w-[900px] w-full flex justify-between items-center'>
+				<div
+					className={`${
+						fixed ? 'fixed top-0 z-50' : ''
+					} bg-white border-b border-slate-200 w-full py-4 px-8 flex justify-center`}>
+					<div className=' w-full flex justify-between items-center'>
 						<button onClick={() => setJsonData([])}>Trash</button>
 						<span>
 							Translated:{' '}
@@ -148,10 +231,20 @@ const Translator = () => {
 							value={targetLanguage}
 							onChange={(e) => setTargetLanguage(e.target.value)}
 						/>
+
 						<button
-							className='bg-accent-50 text-accent border-none py-2 px-5 rounded-md font-bold cursor-pointer flex flex-row items-center gap-2'
+							className='bg-accent-50 text-accent border-none py-2 px-5 rounded-md font-bold cursor-pointer flex flex-row items-center gap-4'
 							onClick={handleTranslation}>
-							Translate
+							{loadingTranslation && (
+								<LoadingSpinner
+									ringColor='accent'
+									spinnerColor='white'
+									size={15}
+								/>
+							)}
+							{loadingTranslation
+								? 'Translating...'
+								: 'Translate'}
 						</button>
 						{/* <Dropdown
 							items={[{ name: 'Czech' }]}
@@ -160,6 +253,61 @@ const Translator = () => {
 								setTargetLanguage(value)
 							}
 						/> */}
+						{pageCount < 2 ? null : (
+							<ReactPaginate
+								previousLabel={
+									<svg
+										xmlns='http://www.w3.org/2000/svg'
+										width='24'
+										height='24'
+										fill='#334155'
+										viewBox='0 0 256 256'>
+										<path d='M165.66,202.34a8,8,0,0,1-11.32,11.32l-80-80a8,8,0,0,1,0-11.32l80-80a8,8,0,0,1,11.32,11.32L91.31,128Z'></path>
+									</svg>
+								}
+								nextLabel={
+									<svg
+										xmlns='http://www.w3.org/2000/svg'
+										width='24'
+										height='24'
+										fill='#334155'
+										viewBox='0 0 256 256'>
+										<path d='M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z'></path>
+									</svg>
+								}
+								breakLabel={'...'}
+								pageCount={pageCount}
+								marginPagesDisplayed={1}
+								pageRangeDisplayed={3}
+								onPageChange={handlePageChange}
+								containerClassName={
+									'flex justify-center items-center gap-2'
+								}
+								pageClassName={
+									'w-[40px] h-[40px] bg-slate-100 rounded-sm text-sm select-none'
+								}
+								pageLinkClassName={
+									'w-[40px] h-[40px] flex justify-center items-center rounded-sm'
+								}
+								previousClassName={
+									'w-[40px] h-[40px] bg-slate-100 rounded-sm text-sm select-none'
+								}
+								previousLinkClassName={
+									'w-[40px] h-[40px] flex justify-center items-center rounded-sm'
+								}
+								nextClassName={
+									'w-[40px] h-[40px] bg-slate-100 rounded-sm text-sm select-none'
+								}
+								nextLinkClassName={
+									'w-[40px] h-[40px] flex justify-center items-center rounded-sm'
+								}
+								activeClassName={
+									'!bg-accent text-white rounded-sm'
+								}
+								breakClassName={'select-none'}
+								renderOnZeroPageCount={null}
+							/>
+						)}
 						<button
 							className='bg-accent-50 text-accent border-none py-2 px-5 rounded-md font-bold cursor-pointer flex flex-row items-center gap-2'
 							onClick={handleFileExport}>
@@ -169,8 +317,11 @@ const Translator = () => {
 					</div>
 				</div>
 			)}
-			<div className='TranslationScreen [min-height:calc(100vh-93px)] bg-slate-50 flex justify-center'>
-				<div className='max-w-[900px] w-full px-8 lg:px-0 lg:p-20'>
+			<div
+				className={`TranslationScreen [min-height:calc(100vh-93px)] bg-slate-50 flex justify-center ${
+					fixed ? 'mt-[73px]' : ''
+				}`}>
+				<div className='max-w-[900px] w-full px-8 lg:px-0 lg:pb-20 lg:pt-10'>
 					{jsonData == '' ? (
 						<div className='bg-white border border-slate-200 rounded-md p-8 shadow-sm'>
 							<h2 className='pb-8'>
@@ -194,9 +345,7 @@ const Translator = () => {
 									className='text-accent mb-4'
 								/>
 								<h2>Drag and drop file here</h2>
-								<h6>
-									Supported files: XLSX from Feedyou Platform
-								</h6>
+								<h6>Supported files: XLSX</h6>
 								<input
 									id='file'
 									className='hidden'
@@ -245,62 +394,11 @@ const Translator = () => {
 						</div>
 					)}
 
-					{jsonData.map((item, index) => (
-						<div
-							key={index}
-							className='TranslationCard bg-white text-slate-700 border border-slate-200 rounded-md mb-4 shadow-sm'>
-							<div className='flex justify-between py-4 px-6 border-b border-slate-200'>
-								<div className='flex gap-8'>
-									<div className='flex flex-col'>
-										<h6 className='m-0'>Step ID</h6>
-										<span className='font-bold'>
-											{item.stepId}
-										</span>
-									</div>
-									<div className='flex flex-col'>
-										<h6 className='m-0'>Step ID</h6>
-										<span className='font-bold capitalize'>
-											{item.stepType}
-										</span>
-									</div>
-								</div>
-								<div className='flex items-center gap-4'>
-									<Checkbox
-										onCheckboxChange={(e) =>
-											handleCheck(index, e.target.checked)
-										}
-									/>
-									Translation complete
-								</div>
-							</div>
+					{renderItems}
 
-							<div className='md:flex'>
-								<div className='Original p-6 md:border-r border-slate-200 bg-slate-50 text-slate-400 flex-1 rounded-bl-md'>
-									{item.value}
-								</div>
-								<div className='Translation p-6 flex-1'>
-									<textarea
-										rows={1}
-										className='w-full h-full min-h-full focus:outline-none'
-										type='text'
-										name='translation'
-										placeholder='Start translating...'
-										value={item.translation}
-										onChange={(e) =>
-											handleInputChange(
-												e.target.value,
-												index
-											)
-										}
-									/>
-								</div>
-							</div>
-						</div>
-					))}
-					{/* {jsonData.map((item) => {
-					console.log(item.value);
-				})}
-				<pre>{JSON.stringify(jsonData, null, 2)}</pre> */}
+					{/* {jsonData == '' || pageCount < 2 ? null : (
+						<div className='Pagination fixed bottom-0 left-0 w-full bg-white py-4 border-t border-slate-200'></div>
+					)} */}
 				</div>
 			</div>
 		</>

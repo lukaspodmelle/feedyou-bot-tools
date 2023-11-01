@@ -27,6 +27,9 @@
 	input {
 		@apply text-slate-700;
 	}
+	button {
+		@apply select-none;
+	}
 }
 
 /* Scrollbar */
