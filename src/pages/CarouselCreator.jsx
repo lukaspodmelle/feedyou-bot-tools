@@ -3,9 +3,10 @@ import { DownloadSimple } from '@phosphor-icons/react';
 import { Switch } from '@headlessui/react';
 import { toPng } from 'html-to-image';
 
-import { Nav, InputText, FontsDropdown, InputColor } from '../components';
+import { InputText, FontsDropdown, InputColor } from '../components';
 import phosphorIcons from '../assets/phosphor-icons';
 import fonts from '../assets/fonts';
+import { siteConfig } from '../siteConfig';
 
 import { useCardStore } from '../context';
 
@@ -51,7 +52,11 @@ const CarouselCreator = () => {
 
 	return (
 		<>
-			<div className='flex [height:calc(100vh-93px)] flex-col-reverse lg:flex-row'>
+			<div
+				className='flex flex-col-reverse lg:flex-row'
+				style={{
+					height: `calc(100vh - ${siteConfig.navigation.navHeight}px)`,
+				}}>
 				<div className='Sidebar px-8 pt-8 pb-[92px] lg:w-[26rem] border-r border-slate-200 overflow-y-auto'>
 					<div className='mb-6'>
 						<h6>Background Color</h6>

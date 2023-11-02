@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import ReactPaginate from 'react-paginate';
 import XLSX from 'xlsx';
 
-import { FileArrowUp, DownloadSimple, Question } from '@phosphor-icons/react';
-
-import { Checkbox, Dropdown, LoadingSpinner } from '../components';
+import { FileArrowUp, DownloadSimple, Trash } from '@phosphor-icons/react';
+import { Dropdown, LoadingSpinner, Modal } from '../components';
 import { languages } from '../assets/deepl-languages';
+import { siteConfig } from '../siteConfig';
 
 const Translator = () => {
 	const [jsonData, setJsonData] = useState([]);
@@ -38,9 +38,11 @@ const Translator = () => {
 		try {
 			const url = 'https://feedyou-bot-tools-api.vercel.app/api/v1/deepl';
 			const textToTranslate = jsonData.map((obj) => obj.value);
-			const dataToSend = [textToTranslate, targetLanguage.language];
 
+			// API accepts: [["texts array"], "targetLanguage"]
+			const dataToSend = [textToTranslate, targetLanguage.language];
 			const returnedData = await postData(url, dataToSend);
+
 			processReturnedData(returnedData);
 		} catch (error) {
 			console.log(error);
@@ -146,11 +148,6 @@ const Translator = () => {
 	// Editing of translated texts
 	const handleInputChange = (text, index) => {};
 
-	// DEBUG
-	const prepareForTranslation = () => {
-		console.log(jsonData.map((obj) => obj.value));
-	};
-
 	// Display data & pagination
 	const itemsPerPage = 10;
 	const pageCount = Math.ceil(jsonData.length / itemsPerPage);
@@ -175,14 +172,6 @@ const Translator = () => {
 							{item.stepType}
 						</span>
 					</div>
-				</div>
-				<div className='flex items-center gap-4'>
-					<Checkbox
-						onCheckboxChange={(e) =>
-							handleCheck(index, e.target.checked)
-						}
-					/>
-					Mark complete
 				</div>
 			</div>
 
@@ -214,11 +203,16 @@ const Translator = () => {
 				<div
 					className={`${
 						fixed ? 'fixed top-0 z-50' : ''
-					} bg-white border-b border-slate-200 w-full py-4 px-8 flex justify-center`}>
+					} bg-white border-b border-slate-200 w-full px-8 flex justify-center`}
+					style={{ height: siteConfig.navigation.toolsHeight }}>
 					<div className=' w-full flex justify-between items-center'>
-						<button onClick={() => setJsonData([])}>Trash</button>
+						<button
+							className='w-[42px] h-[42px] flex justify-center items-center border border-slate-200 hover:bg-slate-50 rounded-md text-slate-700 focus:outline-accent-50'
+							onClick={() => setJsonData([])}>
+							<Trash size={20} />
+						</button>
 						<span>
-							Translated:{' '}
+							Translated:
 							<span className='font-bold'>
 								{jsonData.length} / {jsonData.length} (
 								{(jsonData.length / jsonData.length) * 100}%)
@@ -260,24 +254,26 @@ const Translator = () => {
 										'w-[40px] h-[40px] bg-slate-100 rounded-sm text-sm select-none'
 									}
 									pageLinkClassName={
-										'w-[40px] h-[40px] flex justify-center items-center rounded-sm'
+										'w-[40px] h-[40px] flex justify-center items-center rounded-sm focus:outline-accent-50'
 									}
 									previousClassName={
 										'w-[40px] h-[40px] bg-slate-100 rounded-sm text-sm select-none'
 									}
 									previousLinkClassName={
-										'w-[40px] h-[40px] flex justify-center items-center rounded-sm'
+										'w-[40px] h-[40px] flex justify-center items-center rounded-sm focus:outline-accent-50'
 									}
 									nextClassName={
 										'w-[40px] h-[40px] bg-slate-100 rounded-sm text-sm select-none'
 									}
 									nextLinkClassName={
-										'w-[40px] h-[40px] flex justify-center items-center rounded-sm'
+										'w-[40px] h-[40px] flex justify-center items-center rounded-sm focus:outline-accent-50'
 									}
 									activeClassName={
 										'!bg-accent text-white rounded-sm'
 									}
-									breakClassName={'select-none'}
+									breakClassName={
+										'select-none focus:outline-none'
+									}
 									renderOnZeroPageCount={null}
 								/>
 							)}
@@ -294,8 +290,8 @@ const Translator = () => {
 									onClick={handleTranslation}>
 									{loadingTranslation && (
 										<LoadingSpinner
-											ringColor='accent'
-											spinnerColor='white'
+											ringColor='fill-accent'
+											spinnerColor='stroke-white'
 											size={15}
 										/>
 									)}
@@ -306,7 +302,7 @@ const Translator = () => {
 							</div>
 
 							<button
-								className='bg-accent text-white border-none py-2 px-5 rounded-md font-bold cursor-pointer flex flex-row items-center gap-2 focus:outline-accent'
+								className='bg-accent text-white border-none py-2 px-5 rounded-md font-bold cursor-pointer flex flex-row items-center gap-2 focus:outline-accent-50'
 								onClick={handleFileExport}>
 								Export file
 								<DownloadSimple />
@@ -316,9 +312,12 @@ const Translator = () => {
 				</div>
 			)}
 			<div
-				className={`TranslationScreen [min-height:calc(100vh-93px)] bg-slate-50 flex justify-center ${
-					fixed ? 'mt-[73px]' : ''
-				}`}>
+				className='TranslationScreen [min-height:calc(100vh-95px)] bg-slate-50 flex justify-center'
+				style={
+					jsonData.length !== 0 && fixed
+						? { marginTop: siteConfig.navigation.toolsHeight }
+						: {}
+				}>
 				<div className='max-w-[900px] w-full px-8 py-8 lg:px-0 lg:py-8'>
 					{jsonData == '' ? (
 						<div className='bg-white border border-slate-200 rounded-md p-8 shadow-sm'>
@@ -374,11 +373,6 @@ const Translator = () => {
 								Handle translation
 							</button>
 							<button
-								onClick={prepareForTranslation}
-								className='bg-black text-white p-2 rounded-full'>
-								Debug: Show texts for translation
-							</button>
-							<button
 								onClick={() => console.log(sheetNames)}
 								className='bg-black text-white p-2 rounded-full'>
 								Debug: Log sheet names
@@ -389,6 +383,11 @@ const Translator = () => {
 								Debug: Log workbook
 							</button>
 							<button
+								onClick={() => console.log(jsonData)}
+								className='bg-black text-white p-2 rounded-full'>
+								Debug: Log jsonData
+							</button>
+							<button
 								onClick={handleFileExport}
 								className='bg-black text-white p-2 rounded-full'>
 								Export
@@ -397,10 +396,6 @@ const Translator = () => {
 					)}
 
 					{renderItems}
-
-					{/* {jsonData == '' || pageCount < 2 ? null : (
-						<div className='Pagination fixed bottom-0 left-0 w-full bg-white py-4 border-t border-slate-200'></div>
-					)} */}
 				</div>
 			</div>
 		</>

@@ -13,7 +13,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 
 		<Routes>
 			<Route path='/' element={<CarouselCreator />} />
-			<Route path='/translator' element={<Translator />} />
+			<Route path='/translation-manager' element={<Translator />} />
 		</Routes>
 	</BrowserRouter>
 	//</React.StrictMode>,
