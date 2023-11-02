@@ -100,13 +100,8 @@ export const languages = [
 		supports_formality: true,
 	},
 	{
-		language: 'PT-BR',
-		name: 'Portuguese (Brazilian)',
-		supports_formality: true,
-	},
-	{
 		language: 'PT-PT',
-		name: 'Portuguese (European)',
+		name: 'Portuguese',
 		supports_formality: true,
 	},
 	{
@@ -146,7 +141,7 @@ export const languages = [
 	},
 	{
 		language: 'ZH',
-		name: 'Chinese (simplified)',
+		name: 'Chinese',
 		supports_formality: false,
 	},
 ];

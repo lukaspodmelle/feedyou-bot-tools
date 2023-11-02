@@ -2,13 +2,7 @@ import React, { useState, useEffect } from 'react';
 import ReactPaginate from 'react-paginate';
 import XLSX from 'xlsx';
 
-import {
-	FileArrowUp,
-	DownloadSimple,
-	CaretLeft,
-	CaretRight,
-	CircleNotch,
-} from '@phosphor-icons/react';
+import { FileArrowUp, DownloadSimple, Question } from '@phosphor-icons/react';
 
 import { Checkbox, Dropdown, LoadingSpinner } from '../components';
 import { languages } from '../assets/deepl-languages';
@@ -20,7 +14,7 @@ const Translator = () => {
 	const [fileName, setFileName] = useState();
 	const [loadingTranslation, setLoadingTranslation] = useState(false);
 	const [isDragging, setIsDragging] = useState(false);
-	const [targetLanguage, setTargetLanguage] = useState('PL');
+	const [targetLanguage, setTargetLanguage] = useState(languages[1]);
 	const [currentPage, setCurrentPage] = useState(0);
 	const [fixed, setFixed] = useState(false);
 
@@ -44,7 +38,7 @@ const Translator = () => {
 		try {
 			const url = 'https://feedyou-bot-tools-api.vercel.app/api/v1/deepl';
 			const textToTranslate = jsonData.map((obj) => obj.value);
-			const dataToSend = [textToTranslate, targetLanguage];
+			const dataToSend = [textToTranslate, targetLanguage.language];
 
 			const returnedData = await postData(url, dataToSend);
 			processReturnedData(returnedData);
@@ -100,8 +94,11 @@ const Translator = () => {
 			const reader = new FileReader();
 			reader.onload = (e) => {
 				const data = e.target.result;
-				const workbook = XLSX.read(e.target.result);
+				const workbook = XLSX.read(data);
 				const sheetNames = workbook.SheetNames;
+				if (!sheetNames.includes(sheetName)) {
+					alert(`Cannot read uploaded file`);
+				}
 				const worksheet = workbook.Sheets[sheetName];
 				const json = XLSX.utils.sheet_to_json(worksheet);
 
@@ -124,7 +121,7 @@ const Translator = () => {
 			const reader = new FileReader();
 			reader.onload = (e) => {
 				const data = e.target.result;
-				const workbook = XLSX.read(e.target.result);
+				const workbook = XLSX.read(data);
 				const sheetNames = workbook.SheetNames;
 				const worksheet = workbook.Sheets[sheetName];
 				const json = XLSX.utils.sheet_to_json(worksheet);
@@ -185,7 +182,7 @@ const Translator = () => {
 							handleCheck(index, e.target.checked)
 						}
 					/>
-					Translation complete
+					Mark complete
 				</div>
 			</div>
 
@@ -195,6 +192,7 @@ const Translator = () => {
 				</div>
 				<div className='Translation p-6 flex-1'>
 					<textarea
+						id={index}
 						rows={1}
 						className='w-full h-full min-h-full focus:outline-none'
 						type='text'
@@ -226,94 +224,94 @@ const Translator = () => {
 								{(jsonData.length / jsonData.length) * 100}%)
 							</span>
 						</span>
-						<input
-							type='text'
-							value={targetLanguage}
-							onChange={(e) => setTargetLanguage(e.target.value)}
-						/>
 
-						<button
-							className='bg-accent-50 text-accent border-none py-2 px-5 rounded-md font-bold cursor-pointer flex flex-row items-center gap-4'
-							onClick={handleTranslation}>
-							{loadingTranslation && (
-								<LoadingSpinner
-									ringColor='accent'
-									spinnerColor='white'
-									size={15}
+						<div className='flex gap-8'>
+							{pageCount < 2 ? null : (
+								<ReactPaginate
+									previousLabel={
+										<svg
+											xmlns='http://www.w3.org/2000/svg'
+											width='24'
+											height='24'
+											fill='#334155'
+											viewBox='0 0 256 256'>
+											<path d='M165.66,202.34a8,8,0,0,1-11.32,11.32l-80-80a8,8,0,0,1,0-11.32l80-80a8,8,0,0,1,11.32,11.32L91.31,128Z'></path>
+										</svg>
+									}
+									nextLabel={
+										<svg
+											xmlns='http://www.w3.org/2000/svg'
+											width='24'
+											height='24'
+											fill='#334155'
+											viewBox='0 0 256 256'>
+											<path d='M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z'></path>
+										</svg>
+									}
+									breakLabel={'...'}
+									pageCount={pageCount}
+									marginPagesDisplayed={1}
+									pageRangeDisplayed={3}
+									onPageChange={handlePageChange}
+									containerClassName={
+										'flex justify-center items-center gap-2'
+									}
+									pageClassName={
+										'w-[40px] h-[40px] bg-slate-100 rounded-sm text-sm select-none'
+									}
+									pageLinkClassName={
+										'w-[40px] h-[40px] flex justify-center items-center rounded-sm'
+									}
+									previousClassName={
+										'w-[40px] h-[40px] bg-slate-100 rounded-sm text-sm select-none'
+									}
+									previousLinkClassName={
+										'w-[40px] h-[40px] flex justify-center items-center rounded-sm'
+									}
+									nextClassName={
+										'w-[40px] h-[40px] bg-slate-100 rounded-sm text-sm select-none'
+									}
+									nextLinkClassName={
+										'w-[40px] h-[40px] flex justify-center items-center rounded-sm'
+									}
+									activeClassName={
+										'!bg-accent text-white rounded-sm'
+									}
+									breakClassName={'select-none'}
+									renderOnZeroPageCount={null}
 								/>
 							)}
-							{loadingTranslation
-								? 'Translating...'
-								: 'Translate'}
-						</button>
-						{/* <Dropdown
-							items={[{ name: 'Czech' }]}
-							selected={[{ name: 'Czech' }]}
-							onDropdownChange={(value) =>
-								setTargetLanguage(value)
-							}
-						/> */}
-						{pageCount < 2 ? null : (
-							<ReactPaginate
-								previousLabel={
-									<svg
-										xmlns='http://www.w3.org/2000/svg'
-										width='24'
-										height='24'
-										fill='#334155'
-										viewBox='0 0 256 256'>
-										<path d='M165.66,202.34a8,8,0,0,1-11.32,11.32l-80-80a8,8,0,0,1,0-11.32l80-80a8,8,0,0,1,11.32,11.32L91.31,128Z'></path>
-									</svg>
-								}
-								nextLabel={
-									<svg
-										xmlns='http://www.w3.org/2000/svg'
-										width='24'
-										height='24'
-										fill='#334155'
-										viewBox='0 0 256 256'>
-										<path d='M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z'></path>
-									</svg>
-								}
-								breakLabel={'...'}
-								pageCount={pageCount}
-								marginPagesDisplayed={1}
-								pageRangeDisplayed={3}
-								onPageChange={handlePageChange}
-								containerClassName={
-									'flex justify-center items-center gap-2'
-								}
-								pageClassName={
-									'w-[40px] h-[40px] bg-slate-100 rounded-sm text-sm select-none'
-								}
-								pageLinkClassName={
-									'w-[40px] h-[40px] flex justify-center items-center rounded-sm'
-								}
-								previousClassName={
-									'w-[40px] h-[40px] bg-slate-100 rounded-sm text-sm select-none'
-								}
-								previousLinkClassName={
-									'w-[40px] h-[40px] flex justify-center items-center rounded-sm'
-								}
-								nextClassName={
-									'w-[40px] h-[40px] bg-slate-100 rounded-sm text-sm select-none'
-								}
-								nextLinkClassName={
-									'w-[40px] h-[40px] flex justify-center items-center rounded-sm'
-								}
-								activeClassName={
-									'!bg-accent text-white rounded-sm'
-								}
-								breakClassName={'select-none'}
-								renderOnZeroPageCount={null}
-							/>
-						)}
-						<button
-							className='bg-accent-50 text-accent border-none py-2 px-5 rounded-md font-bold cursor-pointer flex flex-row items-center gap-2'
-							onClick={handleFileExport}>
-							Export file
-							<DownloadSimple />
-						</button>
+							<div className='flex gap-2'>
+								<Dropdown
+									data={languages}
+									selected={targetLanguage}
+									onDropdownChange={(value) =>
+										setTargetLanguage(value)
+									}
+								/>
+								<button
+									className='bg-accent-50 text-accent border-none py-2 px-5 rounded-md font-bold cursor-pointer flex flex-row items-center gap-4 focus:outline-accent'
+									onClick={handleTranslation}>
+									{loadingTranslation && (
+										<LoadingSpinner
+											ringColor='accent'
+											spinnerColor='white'
+											size={15}
+										/>
+									)}
+									{loadingTranslation
+										? 'Translating...'
+										: 'Translate'}
+								</button>
+							</div>
+
+							<button
+								className='bg-accent text-white border-none py-2 px-5 rounded-md font-bold cursor-pointer flex flex-row items-center gap-2 focus:outline-accent'
+								onClick={handleFileExport}>
+								Export file
+								<DownloadSimple />
+							</button>
+						</div>
 					</div>
 				</div>
 			)}
@@ -321,12 +319,18 @@ const Translator = () => {
 				className={`TranslationScreen [min-height:calc(100vh-93px)] bg-slate-50 flex justify-center ${
 					fixed ? 'mt-[73px]' : ''
 				}`}>
-				<div className='max-w-[900px] w-full px-8 lg:px-0 lg:pb-20 lg:pt-10'>
+				<div className='max-w-[900px] w-full px-8 py-8 lg:px-0 lg:py-8'>
 					{jsonData == '' ? (
 						<div className='bg-white border border-slate-200 rounded-md p-8 shadow-sm'>
-							<h2 className='pb-8'>
-								Upload bot file to be translated
-							</h2>
+							<div className='flex flex-col lg:flex-row gap-4 lg:justify-between pb-8'>
+								<h2>Upload bot file for translation</h2>
+								<span className='text-sm flex items-center gap-2 select-none cursor-pointer'>
+									How does it work
+									<span className='bg-slate-200 rounded-full w-[20px] h-[20px] flex items-center justify-center text-slate-700 font-bold text-xs'>
+										?
+									</span>
+								</span>
+							</div>
 							<div
 								onDrop={handleFileDrop}
 								onDragOver={(e) => {
@@ -338,7 +342,7 @@ const Translator = () => {
 									isDragging
 										? 'border-accent transition-all'
 										: 'border-slate-200 transition-all'
-								} border-2 border-dashed rounded-md flex justify-center items-center flex-col p-8`}>
+								} border-2 border-dashed rounded-md flex justify-center items-center text-center flex-col p-8`}>
 								<FileArrowUp
 									size={60}
 									weight='duotone'
@@ -356,13 +360,11 @@ const Translator = () => {
 								<label
 									htmlFor='file'
 									className='bg-accent-50 text-accent border-none py-2 px-5 rounded-md font-bold cursor-pointer mt-4'>
-									Upload file
+									Browse files
 								</label>
 							</div>
 						</div>
 					) : null}
-
-					{loadingTranslation && <div>Loading...</div>}
 
 					{window.location.href.includes('#debug') && (
 						<div className='absolute bottom-4 right-4 flex flex-col gap-2'>

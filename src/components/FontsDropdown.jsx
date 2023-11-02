@@ -1,17 +1,21 @@
-import React, { Fragment, useState } from 'react';
+import React from 'react';
+import { Fragment } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
-import { Check, CaretUpDown } from '@phosphor-icons/react';
+import { Check, CaretDown } from '@phosphor-icons/react';
 
-const Dropdown = ({ data, selected, onDropdownChange }) => {
+const FontsDropdown = ({ items, selected, onDropdownChange }) => {
 	return (
-		<div className='w-40'>
+		<div className='w-full'>
 			<Listbox value={selected} onChange={onDropdownChange}>
-				<div className='relative'>
-					<Listbox.Button className='relative w-full cursor-pointer rounded-md bg-white py-2 pl-5 pr-8 text-left h-[40] border border-slate-200 focus:outline-accent-50'>
-						<span className='block truncate'>{selected.name}</span>
-						<span className='pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2'>
-							<CaretUpDown
-								className='h-5 w-5 text-gray-400'
+				<div className='relative mt-1'>
+					<Listbox.Button className='relative w-full cursor-pointer border border-slate-200 rounded-md bg-white py-3 pl-3 pr-10 text-left focus:outline-none'>
+						<span className='block truncate text-slate-700'>
+							{selected.name}
+						</span>
+						<span className='pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-gray-400'>
+							<CaretDown
+								weight='bold'
+								size={16}
 								aria-hidden='true'
 							/>
 						</span>
@@ -22,25 +26,25 @@ const Dropdown = ({ data, selected, onDropdownChange }) => {
 						leaveFrom='opacity-100'
 						leaveTo='opacity-0'>
 						<Listbox.Options className='absolute mt-2 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm z-20'>
-							{data.map((item, index) => (
+							{items.map((item, index) => (
 								<Listbox.Option
 									key={index}
 									className={({ active }) =>
-										`relative cursor-default select-none py-2 pl-10 pr-4 ${
+										`relative cursor-pointer select-none py-2 pl-10 pr-4 ${
 											active
 												? 'bg-accent-50 text-accent'
 												: 'text-gray-900'
 										}`
 									}
-									value={item}>
+									value={item}
+									style={{
+										fontFamily: item.name || 'inherit',
+										fontWeight: item.weight || 'inherit',
+									}}>
 									{({ selected }) => (
 										<>
 											<span
-												className={`block truncate ${
-													selected
-														? 'font-medium'
-														: 'font-normal'
-												}`}>
+												className={`block truncate text-slate-700`}>
 												{item.name}
 											</span>
 											{selected ? (
@@ -64,4 +68,4 @@ const Dropdown = ({ data, selected, onDropdownChange }) => {
 	);
 };
 
-export default Dropdown;
+export default FontsDropdown;

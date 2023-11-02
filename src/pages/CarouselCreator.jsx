@@ -3,7 +3,7 @@ import { DownloadSimple } from '@phosphor-icons/react';
 import { Switch } from '@headlessui/react';
 import { toPng } from 'html-to-image';
 
-import { Nav, InputText, Dropdown, InputColor } from '../components';
+import { Nav, InputText, FontsDropdown, InputColor } from '../components';
 import phosphorIcons from '../assets/phosphor-icons';
 import fonts from '../assets/fonts';
 
@@ -81,7 +81,7 @@ const CarouselCreator = () => {
 
 					<div className='mb-6'>
 						<h6>Text Font</h6>
-						<Dropdown
+						<FontsDropdown
 							items={fonts}
 							selected={textFont}
 							onDropdownChange={(value) => setTextFont(value)}
