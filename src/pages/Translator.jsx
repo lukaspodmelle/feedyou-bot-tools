@@ -76,14 +76,16 @@ const Translator = () => {
 		const translatedTexts = data.translations.map(
 			(translation) => translation.text
 		);
-		const translatedJsonData = [...jsonData];
+		console.log(translatedTexts);
+		const newJsonData = [...jsonData];
 
 		translatedTexts.forEach((text, index) => {
-			if (index < translatedJsonData.length) {
-				translatedJsonData[index]['translation'] = text;
+			if (index < newJsonData.length) {
+				newJsonData[index][targetLanguage.language.toLowerCase()] =
+					text;
 			}
 		});
-		setJsonData(translatedJsonData);
+		setJsonData(newJsonData);
 	};
 
 	// File uploading
@@ -125,6 +127,9 @@ const Translator = () => {
 				const data = e.target.result;
 				const workbook = XLSX.read(data);
 				const sheetNames = workbook.SheetNames;
+				if (!sheetNames.includes(sheetName)) {
+					alert(`Cannot read uploaded file`);
+				}
 				const worksheet = workbook.Sheets[sheetName];
 				const json = XLSX.utils.sheet_to_json(worksheet);
 
@@ -146,7 +151,11 @@ const Translator = () => {
 	};
 
 	// Editing of translated texts
-	const handleInputChange = (text, index) => {};
+	const handleInputChange = (text, index) => {
+		const newJsonData = [...jsonData];
+		newJsonData[index][targetLanguage.language.toLowerCase()] = text;
+		setJsonData(newJsonData);
+	};
 
 	// Display data & pagination
 	const itemsPerPage = 10;
@@ -185,9 +194,8 @@ const Translator = () => {
 						rows={1}
 						className='w-full h-full min-h-full focus:outline-none'
 						type='text'
-						name='translation'
 						placeholder='Start translating...'
-						value={item.translation}
+						value={item[targetLanguage.language.toLowerCase()]}
 						onChange={(e) =>
 							handleInputChange(e.target.value, index)
 						}
