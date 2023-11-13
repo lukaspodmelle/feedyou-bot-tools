@@ -2,7 +2,7 @@ import React, { Fragment, useState } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
 import { Check, CaretUpDown, Translate } from '@phosphor-icons/react';
 
-const Dropdown = ({ data, selected, reference, onDropdownChange }) => {
+const LangDropdown = ({ data, selected, reference, onDropdownChange }) => {
 	return (
 		<div className='w-40'>
 			<Listbox value={selected} onChange={onDropdownChange}>
@@ -71,4 +71,4 @@ const Dropdown = ({ data, selected, reference, onDropdownChange }) => {
 	);
 };
 
-export default Dropdown;
+export default LangDropdown;

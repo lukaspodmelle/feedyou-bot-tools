@@ -3,7 +3,7 @@ import ReactPaginate from 'react-paginate';
 import XLSX from 'xlsx';
 
 import { FileArrowUp, DownloadSimple, Trash } from '@phosphor-icons/react';
-import { Dropdown, LoadingSpinner } from '../components';
+import { LangDropdown, LoadingSpinner, Modal } from '../components';
 import { languages } from '../assets/deepl-languages';
 import { siteConfig } from '../siteConfig';
 
@@ -16,9 +16,10 @@ const Translator = () => {
 	const [isDragging, setIsDragging] = useState(false);
 	const [targetLanguage, setTargetLanguage] = useState(languages[1]);
 	const [translatedLanguages, setTranslatedLanguages] = useState([]);
-	// const [translatedStrings, setTranslatedStrings] = useState(0);
 	const [currentPage, setCurrentPage] = useState(0);
 	const [fixed, setFixed] = useState(false);
+	const [isModalOpen, setModalOpen] = useState(false);
+	const [modal, setModal] = useState({});
 
 	// Tool bar scrolling
 	useEffect(() => {
@@ -36,6 +37,21 @@ const Translator = () => {
 
 	// Handle translation
 	const handleTranslation = async () => {
+		const isAnyStringTranslated = jsonData.some((obj) =>
+			obj.hasOwnProperty(targetLanguage.language.toLowerCase())
+		);
+		if (isAnyStringTranslated) {
+			await new Promise((resolve) =>
+				openModal({
+					title: 'Some texts are already translated',
+					text: `You can click Overwrite to replace all translations with new texts from DeepL.`,
+					confirm: 'Overwrite',
+					cancel: 'Cancel',
+					onConfirm: resolve,
+				})
+			);
+		}
+
 		setLoadingTranslation(true);
 		try {
 			const url = 'https://feedyou-bot-tools-api.vercel.app/api/v1/deepl';
@@ -80,7 +96,6 @@ const Translator = () => {
 		);
 
 		const newJsonData = [...jsonData];
-
 		translatedTexts.forEach((text, index) => {
 			if (index < newJsonData.length) {
 				newJsonData[index][targetLanguage.language.toLowerCase()] =
@@ -98,36 +113,11 @@ const Translator = () => {
 
 	// File uploading
 	const sheetName = 'Chatbot texts';
-
-	const handleFileUpload = (e) => {
-		const file = e.target.files[0];
-		if (file) {
-			const fileName = file.name.split('.')[0];
-			const reader = new FileReader();
-			reader.onload = (e) => {
-				const data = e.target.result;
-				const workbook = XLSX.read(data);
-				const sheetNames = workbook.SheetNames;
-				if (!sheetNames.includes(sheetName)) {
-					alert(`Cannot read uploaded file`);
-				}
-				const worksheet = workbook.Sheets[sheetName];
-				const json = XLSX.utils.sheet_to_json(worksheet);
-
-				setWorkbook(workbook);
-				setSheetNames(sheetNames);
-				setJsonData(json);
-			};
-			reader.readAsArrayBuffer(file);
-			setFileName(fileName);
-		}
-	};
-
-	// Drag and drop file uploading
-	const handleFileDrop = (e) => {
+	const handleFileUpload = (e, isDragAndDrop) => {
 		e.preventDefault();
-		const file = e.dataTransfer.files[0];
-
+		const file = isDragAndDrop
+			? e.dataTransfer.files[0]
+			: e.target.files[0];
 		if (file) {
 			const fileName = file.name.split('.')[0];
 			const reader = new FileReader();
@@ -136,7 +126,11 @@ const Translator = () => {
 				const workbook = XLSX.read(data);
 				const sheetNames = workbook.SheetNames;
 				if (!sheetNames.includes(sheetName)) {
-					alert(`Cannot read uploaded file`);
+					openModal({
+						title: 'Cannot read uploaded file',
+						text: `Please check whether you're uploading a correct file previously exported from Feedyou Platform.`,
+						confirm: 'Try again',
+					});
 				}
 				const worksheet = workbook.Sheets[sheetName];
 				const json = XLSX.utils.sheet_to_json(worksheet);
@@ -171,19 +165,15 @@ const Translator = () => {
 		setTranslatedLanguages([]);
 	};
 
-	// Count translations
-	// useEffect(() => {
-	// 	let count = 0;
-	// 	jsonData.forEach((item) => {
-	// 		if (
-	// 			item[targetLanguage.language.toLowerCase()] &&
-	// 			item[targetLanguage.language.toLowerCase()] !== ''
-	// 		) {
-	// 			count++;
-	// 		}
-	// 	});
-	// 	setTranslatedStrings(count);
-	// }, [jsonData]);
+	// Handle modals
+	const openModal = (content) => {
+		setModal(content);
+		setModalOpen(true);
+	};
+	const closeModal = () => {
+		setModal({});
+		setModalOpen(false);
+	};
 
 	// Display data & pagination
 	const itemsPerPage = 10;
@@ -237,6 +227,16 @@ const Translator = () => {
 
 	return (
 		<>
+			<Modal
+				isOpen={isModalOpen}
+				onClose={closeModal}
+				title={modal.title || 'Title'}
+				text={modal.text || 'Content'}
+				confirm={modal.confirm || 'Confirm'}
+				cancel={modal.cancel || null}
+				onConfirm={modal.onConfirm || null}
+			/>
+
 			{jsonData == '' ? null : (
 				<div
 					className={`${
@@ -249,16 +249,6 @@ const Translator = () => {
 							onClick={handleTrash}>
 							<Trash size={20} />
 						</button>
-						{/* <span>
-							Translated:{' '}
-							<span className='font-bold'>
-								{translatedStrings} / {jsonData.length} (
-								{Math.round(
-									(translatedStrings / jsonData.length) * 100
-								)}
-								%)
-							</span>
-						</span> */}
 						<div className='flex gap-8'>
 							{pageCount < 2 ? null : (
 								<ReactPaginate
@@ -318,7 +308,7 @@ const Translator = () => {
 								/>
 							)}
 							<div className='flex gap-2'>
-								<Dropdown
+								<LangDropdown
 									data={languages}
 									reference={translatedLanguages}
 									selected={targetLanguage}
@@ -364,15 +354,18 @@ const Translator = () => {
 						<div className='bg-white border border-slate-200 rounded-md p-8 shadow-sm'>
 							<div className='flex flex-col lg:flex-row gap-4 lg:justify-between pb-8'>
 								<h2>Upload bot file for translation</h2>
-								<span className='text-sm flex items-center gap-2 select-none cursor-pointer'>
+								{/* <span className='text-sm flex items-center gap-2 select-none cursor-pointer'>
 									How does it work
 									<span className='bg-slate-200 rounded-full w-[20px] h-[20px] flex items-center justify-center text-slate-700 font-bold text-xs'>
 										?
 									</span>
-								</span>
+								</span> */}
 							</div>
 							<div
-								onDrop={handleFileDrop}
+								onDrop={(e) => {
+									handleFileUpload(e, true);
+									setIsDragging(false);
+								}}
 								onDragOver={(e) => {
 									e.preventDefault();
 									setIsDragging(true);
@@ -395,7 +388,7 @@ const Translator = () => {
 									className='hidden'
 									type='file'
 									accept='.xlsx'
-									onChange={handleFileUpload}
+									onChange={(e) => handleFileUpload(e, false)}
 								/>
 								<label
 									htmlFor='file'
@@ -408,11 +401,6 @@ const Translator = () => {
 
 					{window.location.href.includes('#debug') && (
 						<div className='absolute bottom-4 right-4 flex flex-col gap-2'>
-							<button
-								onClick={handleTranslation}
-								className='bg-black text-white p-2 rounded-full'>
-								Handle translation
-							</button>
 							<button
 								onClick={() => console.log(sheetNames)}
 								className='bg-black text-white p-2 rounded-full'>
@@ -429,9 +417,16 @@ const Translator = () => {
 								Debug: Log jsonData
 							</button>
 							<button
-								onClick={handleFileExport}
+								onClick={() =>
+									openModal({
+										title: 'Pozor zmrde',
+										content:
+											'Něco ti tady musím povědět...',
+										confirm: 'Ok bráško',
+									})
+								}
 								className='bg-black text-white p-2 rounded-full'>
-								Export
+								Open modal
 							</button>
 						</div>
 					)}
