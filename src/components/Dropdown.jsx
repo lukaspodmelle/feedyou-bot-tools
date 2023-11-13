@@ -1,8 +1,8 @@
 import React, { Fragment, useState } from 'react';
 import { Listbox, Transition } from '@headlessui/react';
-import { Check, CaretUpDown } from '@phosphor-icons/react';
+import { Check, CaretUpDown, Translate } from '@phosphor-icons/react';
 
-const Dropdown = ({ data, selected, onDropdownChange }) => {
+const Dropdown = ({ data, selected, reference, onDropdownChange }) => {
 	return (
 		<div className='w-40'>
 			<Listbox value={selected} onChange={onDropdownChange}>
@@ -50,6 +50,13 @@ const Dropdown = ({ data, selected, onDropdownChange }) => {
 														weight='bold'
 														size={16}
 													/>
+												</span>
+											) : null}
+											{reference.includes(
+												item.language
+											) ? (
+												<span className='absolute inset-y-0 right-0 flex items-center pr-3 text-accent'>
+													<Translate />
 												</span>
 											) : null}
 										</>

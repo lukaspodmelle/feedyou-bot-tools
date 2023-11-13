@@ -3,7 +3,7 @@ import ReactPaginate from 'react-paginate';
 import XLSX from 'xlsx';
 
 import { FileArrowUp, DownloadSimple, Trash } from '@phosphor-icons/react';
-import { Dropdown, LoadingSpinner, Modal } from '../components';
+import { Dropdown, LoadingSpinner } from '../components';
 import { languages } from '../assets/deepl-languages';
 import { siteConfig } from '../siteConfig';
 
@@ -15,6 +15,8 @@ const Translator = () => {
 	const [loadingTranslation, setLoadingTranslation] = useState(false);
 	const [isDragging, setIsDragging] = useState(false);
 	const [targetLanguage, setTargetLanguage] = useState(languages[1]);
+	const [translatedLanguages, setTranslatedLanguages] = useState([]);
+	// const [translatedStrings, setTranslatedStrings] = useState(0);
 	const [currentPage, setCurrentPage] = useState(0);
 	const [fixed, setFixed] = useState(false);
 
@@ -76,7 +78,7 @@ const Translator = () => {
 		const translatedTexts = data.translations.map(
 			(translation) => translation.text
 		);
-		console.log(translatedTexts);
+
 		const newJsonData = [...jsonData];
 
 		translatedTexts.forEach((text, index) => {
@@ -86,6 +88,12 @@ const Translator = () => {
 			}
 		});
 		setJsonData(newJsonData);
+
+		const newTranslatedLanguages = [
+			...translatedLanguages,
+			targetLanguage.language,
+		];
+		setTranslatedLanguages(newTranslatedLanguages);
 	};
 
 	// File uploading
@@ -157,6 +165,26 @@ const Translator = () => {
 		setJsonData(newJsonData);
 	};
 
+	// Trash
+	const handleTrash = () => {
+		setJsonData([]);
+		setTranslatedLanguages([]);
+	};
+
+	// Count translations
+	// useEffect(() => {
+	// 	let count = 0;
+	// 	jsonData.forEach((item) => {
+	// 		if (
+	// 			item[targetLanguage.language.toLowerCase()] &&
+	// 			item[targetLanguage.language.toLowerCase()] !== ''
+	// 		) {
+	// 			count++;
+	// 		}
+	// 	});
+	// 	setTranslatedStrings(count);
+	// }, [jsonData]);
+
 	// Display data & pagination
 	const itemsPerPage = 10;
 	const pageCount = Math.ceil(jsonData.length / itemsPerPage);
@@ -194,8 +222,10 @@ const Translator = () => {
 						rows={1}
 						className='w-full h-full min-h-full focus:outline-none'
 						type='text'
-						placeholder='Start translating...'
-						value={item[targetLanguage.language.toLowerCase()]}
+						placeholder='Type here or click Translate ...'
+						value={
+							item[targetLanguage.language.toLowerCase()] || ''
+						}
 						onChange={(e) =>
 							handleInputChange(e.target.value, index)
 						}
@@ -216,17 +246,19 @@ const Translator = () => {
 					<div className=' w-full flex justify-between items-center'>
 						<button
 							className='w-[42px] h-[42px] flex justify-center items-center border border-slate-200 hover:bg-slate-50 rounded-md text-slate-700 focus:outline-accent-50'
-							onClick={() => setJsonData([])}>
+							onClick={handleTrash}>
 							<Trash size={20} />
 						</button>
-						<span>
-							Translated:
+						{/* <span>
+							Translated:{' '}
 							<span className='font-bold'>
-								{jsonData.length} / {jsonData.length} (
-								{(jsonData.length / jsonData.length) * 100}%)
+								{translatedStrings} / {jsonData.length} (
+								{Math.round(
+									(translatedStrings / jsonData.length) * 100
+								)}
+								%)
 							</span>
-						</span>
-
+						</span> */}
 						<div className='flex gap-8'>
 							{pageCount < 2 ? null : (
 								<ReactPaginate
@@ -288,6 +320,7 @@ const Translator = () => {
 							<div className='flex gap-2'>
 								<Dropdown
 									data={languages}
+									reference={translatedLanguages}
 									selected={targetLanguage}
 									onDropdownChange={(value) =>
 										setTargetLanguage(value)
