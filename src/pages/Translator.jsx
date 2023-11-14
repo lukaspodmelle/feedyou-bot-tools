@@ -7,8 +7,10 @@ import {
 	Trash,
 	CaretLeft,
 	CaretRight,
+	ArrowCounterClockwise,
+	Translate,
 } from '@phosphor-icons/react';
-import { LangDropdown, LoadingSpinner, Modal } from '../components';
+import { LangDropdown, LoadingSpinner, Modal, ToolButton } from '../components';
 import TranslatorUploader from '../ui/TranslatorUploader';
 import TranslatorDebug from '../ui/TranslatorDebug';
 import { languages } from '../assets/deepl-languages';
@@ -205,10 +207,20 @@ const Translator = () => {
 		setJsonData(newJsonData);
 	};
 
-	// Trash
+	// Handle trash
 	const handleTrash = () => {
 		setJsonData([]);
 		setTranslatedLanguages([]);
+	};
+
+	// Handle reset translations
+	const handleReset = () => {
+		const newJsonData = [...jsonData];
+		for (let obj of newJsonData) {
+			delete obj[targetLanguage.language.toLowerCase()];
+		}
+		handleSetTranslatedLanguages(true);
+		setJsonData(newJsonData);
 	};
 
 	// Handle modals
@@ -232,7 +244,8 @@ const Translator = () => {
 	const renderItems = currentItems.map((item, index) => (
 		<div
 			key={index}
-			className='TranslationCard bg-white text-slate-700 border border-slate-200 rounded-md mb-4 shadow-sm'>
+			className='TranslationCard bg-white text-slate-700 border border-slate-200 rounded-md mb-4 shadow-sm'
+		>
 			<div className='flex justify-between py-4 px-6 border-b border-slate-200'>
 				<div className='flex gap-8'>
 					<div className='flex flex-col'>
@@ -288,13 +301,19 @@ const Translator = () => {
 					className={`${
 						fixed ? 'fixed top-0 z-50' : ''
 					} bg-white border-b border-slate-200 w-full px-8 flex justify-center`}
-					style={{ height: siteConfig.navigation.toolsHeight }}>
-					<div className=' w-full flex justify-between items-center'>
-						<button
-							className='w-[42px] h-[42px] flex justify-center items-center border border-slate-200 hover:bg-slate-50 rounded-md text-slate-700 focus:outline-accent-50'
-							onClick={handleTrash}>
-							<Trash size={20} />
-						</button>
+					style={{ height: siteConfig.navigation.toolsHeight }}
+				>
+					<div className='w-full flex justify-between items-center'>
+						<div className='hidden lg:flex gap-2'>
+							<ToolButton
+								onButtonClick={handleTrash}
+								icon={<Trash size={20} />}
+							/>
+							<ToolButton
+								onButtonClick={handleReset}
+								icon={<ArrowCounterClockwise size={20} />}
+							/>
+						</div>
 						<div className='flex gap-8'>
 							{pageCount < 2 ? null : (
 								<ReactPaginate
@@ -334,7 +353,8 @@ const Translator = () => {
 								/>
 								<button
 									className='bg-accent-50 text-accent border-none py-2 px-5 rounded-md font-bold cursor-pointer flex flex-row items-center gap-4 focus:outline-accent'
-									onClick={handleTranslation}>
+									onClick={handleTranslation}
+								>
 									{loadingTranslation && (
 										<LoadingSpinner
 											ringColor='fill-accent'
@@ -349,8 +369,9 @@ const Translator = () => {
 							</div>
 
 							<button
-								className='bg-accent text-white border-none py-2 px-5 rounded-md font-bold cursor-pointer flex flex-row items-center gap-2 focus:outline-accent-50'
-								onClick={handleFileExport}>
+								className='hidden bg-accent text-white border-none py-2 px-5 rounded-md font-bold cursor-pointer lg:flex flex-row items-center gap-2 focus:outline-accent-50'
+								onClick={handleFileExport}
+							>
 								Export file
 								<DownloadSimple />
 							</button>
@@ -364,7 +385,8 @@ const Translator = () => {
 					jsonData.length !== 0 && fixed
 						? { marginTop: siteConfig.navigation.toolsHeight }
 						: {}
-				}>
+				}
+			>
 				<div className='max-w-[900px] w-full px-8 py-8 lg:px-0 lg:py-8'>
 					{jsonData == '' ? (
 						<TranslatorUploader
@@ -380,6 +402,27 @@ const Translator = () => {
 							inputOnChange={(e) => handleFileUpload(e, false)}
 							isDragging={isDragging}
 						/>
+					) : null}
+
+					{jsonData.length !== 0 ? (
+						<div className='fixed right-6 bottom-6 flex flex-col items-center gap-3 lg:hidden'>
+							<div className='flex flex-col gap-2'>
+								<ToolButton
+									onButtonClick={handleTrash}
+									icon={<Trash size={20} />}
+								/>
+								<ToolButton
+									onButtonClick={handleReset}
+									icon={<ArrowCounterClockwise size={20} />}
+								/>
+							</div>
+							<div
+								onClick={handleFileExport}
+								className='w-[52px] h-[52px] bg-accent rounded-full flex justify-center items-center cursor-pointer'
+							>
+								<DownloadSimple size={26} color='white' />
+							</div>
+						</div>
 					) : null}
 
 					{renderItems}
