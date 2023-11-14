@@ -2,24 +2,50 @@ import React, { useState, useEffect } from 'react';
 import ReactPaginate from 'react-paginate';
 import XLSX from 'xlsx';
 
-import { FileArrowUp, DownloadSimple, Trash } from '@phosphor-icons/react';
+import {
+	DownloadSimple,
+	Trash,
+	CaretLeft,
+	CaretRight,
+} from '@phosphor-icons/react';
 import { LangDropdown, LoadingSpinner, Modal } from '../components';
+import TranslatorUploader from '../ui/TranslatorUploader';
+import TranslatorDebug from '../ui/TranslatorDebug';
 import { languages } from '../assets/deepl-languages';
 import { siteConfig } from '../siteConfig';
 
+import { useTranslatorStore } from '../context/translatorStore';
+
+const linkClassName = `w-[40px] h-[40px] flex justify-center items-center rounded-sm focus:outline-accent-50`;
+const parentLinkClassName = `w-[40px] h-[40px] bg-slate-100 rounded-sm text-sm select-none`;
+
 const Translator = () => {
-	const [jsonData, setJsonData] = useState([]);
-	const [sheetNames, setSheetNames] = useState();
-	const [workbook, setWorkbook] = useState();
-	const [fileName, setFileName] = useState();
+	// Global states
+	const {
+		jsonData,
+		setJsonData,
+		sheetNames,
+		setSheetNames,
+		workbook,
+		setWorkbook,
+		fileName,
+		setFileName,
+		targetLanguage,
+		setTargetLanguage,
+		translatedLanguages,
+		setTranslatedLanguages,
+		fixed,
+		setFixed,
+		isModalOpen,
+		setModalOpen,
+		modal,
+		setModal,
+	} = useTranslatorStore();
+
+	// Local states
 	const [loadingTranslation, setLoadingTranslation] = useState(false);
 	const [isDragging, setIsDragging] = useState(false);
-	const [targetLanguage, setTargetLanguage] = useState(languages[1]);
-	const [translatedLanguages, setTranslatedLanguages] = useState([]);
 	const [currentPage, setCurrentPage] = useState(0);
-	const [fixed, setFixed] = useState(false);
-	const [isModalOpen, setModalOpen] = useState(false);
-	const [modal, setModal] = useState({});
 
 	// Tool bar scrolling
 	useEffect(() => {
@@ -103,14 +129,27 @@ const Translator = () => {
 			}
 		});
 		setJsonData(newJsonData);
-
-		const newTranslatedLanguages = [
-			...translatedLanguages,
-			targetLanguage.language,
-		];
-		setTranslatedLanguages(newTranslatedLanguages);
+		handleSetTranslatedLanguages();
 	};
 
+	// Keeping track of translated languages
+	const handleSetTranslatedLanguages = (isEmpty) => {
+		if (
+			!translatedLanguages.includes(targetLanguage.language) &&
+			!isEmpty
+		) {
+			const newTranslatedLanguages = [
+				...translatedLanguages,
+				targetLanguage.language,
+			];
+			setTranslatedLanguages(newTranslatedLanguages);
+		} else if (isEmpty) {
+			const newTranslatedLanguages = translatedLanguages.filter(
+				(language) => language !== targetLanguage.language
+			);
+			setTranslatedLanguages(newTranslatedLanguages);
+		}
+	};
 	// File uploading
 	const sheetName = 'Chatbot texts';
 	const handleFileUpload = (e, isDragAndDrop) => {
@@ -152,10 +191,17 @@ const Translator = () => {
 		}
 	};
 
-	// Editing of translated texts
+	// Adding or removing translated texts
 	const handleInputChange = (text, index) => {
 		const newJsonData = [...jsonData];
-		newJsonData[index][targetLanguage.language.toLowerCase()] = text;
+		if (text === '') {
+			delete newJsonData[index][targetLanguage.language.toLowerCase()];
+			handleSetTranslatedLanguages(true);
+		} else {
+			newJsonData[index][targetLanguage.language.toLowerCase()] = text;
+			handleSetTranslatedLanguages();
+		}
+
 		setJsonData(newJsonData);
 	};
 
@@ -234,7 +280,7 @@ const Translator = () => {
 				text={modal.text || 'Content'}
 				confirm={modal.confirm || 'Confirm'}
 				cancel={modal.cancel || null}
-				onConfirm={modal.onConfirm || null}
+				onConfirm={modal.onConfirm || (() => {})}
 			/>
 
 			{jsonData == '' ? null : (
@@ -252,26 +298,8 @@ const Translator = () => {
 						<div className='flex gap-8'>
 							{pageCount < 2 ? null : (
 								<ReactPaginate
-									previousLabel={
-										<svg
-											xmlns='http://www.w3.org/2000/svg'
-											width='24'
-											height='24'
-											fill='#334155'
-											viewBox='0 0 256 256'>
-											<path d='M165.66,202.34a8,8,0,0,1-11.32,11.32l-80-80a8,8,0,0,1,0-11.32l80-80a8,8,0,0,1,11.32,11.32L91.31,128Z'></path>
-										</svg>
-									}
-									nextLabel={
-										<svg
-											xmlns='http://www.w3.org/2000/svg'
-											width='24'
-											height='24'
-											fill='#334155'
-											viewBox='0 0 256 256'>
-											<path d='M181.66,133.66l-80,80a8,8,0,0,1-11.32-11.32L164.69,128,90.34,53.66a8,8,0,0,1,11.32-11.32l80,80A8,8,0,0,1,181.66,133.66Z'></path>
-										</svg>
-									}
+									previousLabel={<CaretLeft />}
+									nextLabel={<CaretRight />}
 									breakLabel={'...'}
 									pageCount={pageCount}
 									marginPagesDisplayed={1}
@@ -280,24 +308,12 @@ const Translator = () => {
 									containerClassName={
 										'flex justify-center items-center gap-2'
 									}
-									pageClassName={
-										'w-[40px] h-[40px] bg-slate-100 rounded-sm text-sm select-none'
-									}
-									pageLinkClassName={
-										'w-[40px] h-[40px] flex justify-center items-center rounded-sm focus:outline-accent-50'
-									}
-									previousClassName={
-										'w-[40px] h-[40px] bg-slate-100 rounded-sm text-sm select-none'
-									}
-									previousLinkClassName={
-										'w-[40px] h-[40px] flex justify-center items-center rounded-sm focus:outline-accent-50'
-									}
-									nextClassName={
-										'w-[40px] h-[40px] bg-slate-100 rounded-sm text-sm select-none'
-									}
-									nextLinkClassName={
-										'w-[40px] h-[40px] flex justify-center items-center rounded-sm focus:outline-accent-50'
-									}
+									pageClassName={parentLinkClassName}
+									pageLinkClassName={linkClassName}
+									previousClassName={parentLinkClassName}
+									previousLinkClassName={linkClassName}
+									nextClassName={parentLinkClassName}
+									nextLinkClassName={linkClassName}
 									activeClassName={
 										'!bg-accent text-white rounded-sm'
 									}
@@ -351,87 +367,26 @@ const Translator = () => {
 				}>
 				<div className='max-w-[900px] w-full px-8 py-8 lg:px-0 lg:py-8'>
 					{jsonData == '' ? (
-						<div className='bg-white border border-slate-200 rounded-md p-8 shadow-sm'>
-							<div className='flex flex-col lg:flex-row gap-4 lg:justify-between pb-8'>
-								<h2>Upload bot file for translation</h2>
-								{/* <span className='text-sm flex items-center gap-2 select-none cursor-pointer'>
-									How does it work
-									<span className='bg-slate-200 rounded-full w-[20px] h-[20px] flex items-center justify-center text-slate-700 font-bold text-xs'>
-										?
-									</span>
-								</span> */}
-							</div>
-							<div
-								onDrop={(e) => {
-									handleFileUpload(e, true);
-									setIsDragging(false);
-								}}
-								onDragOver={(e) => {
-									e.preventDefault();
-									setIsDragging(true);
-								}}
-								onDragLeave={() => setIsDragging(false)}
-								className={`${
-									isDragging
-										? 'border-accent transition-all'
-										: 'border-slate-200 transition-all'
-								} border-2 border-dashed rounded-md flex justify-center items-center text-center flex-col p-8`}>
-								<FileArrowUp
-									size={60}
-									weight='duotone'
-									className='text-accent mb-4'
-								/>
-								<h2>Drag and drop file here</h2>
-								<h6>Supported files: XLSX</h6>
-								<input
-									id='file'
-									className='hidden'
-									type='file'
-									accept='.xlsx'
-									onChange={(e) => handleFileUpload(e, false)}
-								/>
-								<label
-									htmlFor='file'
-									className='bg-accent-50 text-accent border-none py-2 px-5 rounded-md font-bold cursor-pointer mt-4'>
-									Browse files
-								</label>
-							</div>
-						</div>
+						<TranslatorUploader
+							onDrop={(e) => {
+								handleFileUpload(e, true);
+								setIsDragging(false);
+							}}
+							onDragOver={(e) => {
+								e.preventDefault();
+								setIsDragging(true);
+							}}
+							onDragLeave={() => setIsDragging(false)}
+							inputOnChange={(e) => handleFileUpload(e, false)}
+							isDragging={isDragging}
+						/>
 					) : null}
 
-					{window.location.href.includes('#debug') && (
-						<div className='absolute bottom-4 right-4 flex flex-col gap-2'>
-							<button
-								onClick={() => console.log(sheetNames)}
-								className='bg-black text-white p-2 rounded-full'>
-								Debug: Log sheet names
-							</button>
-							<button
-								onClick={() => console.log(workbook)}
-								className='bg-black text-white p-2 rounded-full'>
-								Debug: Log workbook
-							</button>
-							<button
-								onClick={() => console.log(jsonData)}
-								className='bg-black text-white p-2 rounded-full'>
-								Debug: Log jsonData
-							</button>
-							<button
-								onClick={() =>
-									openModal({
-										title: 'Pozor zmrde',
-										content:
-											'Něco ti tady musím povědět...',
-										confirm: 'Ok bráško',
-									})
-								}
-								className='bg-black text-white p-2 rounded-full'>
-								Open modal
-							</button>
-						</div>
-					)}
-
 					{renderItems}
+
+					{window.location.href.includes('#debug') && (
+						<TranslatorDebug />
+					)}
 				</div>
 			</div>
 		</>
