@@ -150,7 +150,7 @@ const CarouselCreator = () => {
 				</div>
 
 				<div
-					className='Export lg:w-[26rem] bg-accent text-white text-xl absolute bottom-0 left-0 w-full p-8 cursor-pointer flex justify-center items-center gap-4 z-50'
+					className='Export lg:w-[26rem] bg-accent text-white text-xl fixed bottom-0 left-0 right-0 w-full p-6 lg:p-8 cursor-pointer flex justify-center items-center gap-4 z-50'
 					onClick={handleImageExport}>
 					<span className='font-bold'>Export Image</span>
 					<DownloadSimple size={19} weight='bold' />
