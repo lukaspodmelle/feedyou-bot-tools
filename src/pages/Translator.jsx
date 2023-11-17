@@ -10,7 +10,13 @@ import {
 	ArrowCounterClockwise,
 	Translate,
 } from '@phosphor-icons/react';
-import { LangDropdown, LoadingSpinner, Modal, ToolButton } from '../components';
+import {
+	LangDropdown,
+	LoadingSpinner,
+	Modal,
+	ToolButton,
+	Tooltip,
+} from '../components';
 import TranslatorUploader from '../ui/TranslatorUploader';
 import TranslatorDebug from '../ui/TranslatorDebug';
 import { languages } from '../assets/deepl-languages';
@@ -305,14 +311,18 @@ const Translator = () => {
 				>
 					<div className='w-full flex justify-between items-center'>
 						<div className='hidden lg:flex gap-2'>
-							<ToolButton
-								onButtonClick={handleTrash}
-								icon={<Trash size={20} />}
-							/>
-							<ToolButton
-								onButtonClick={handleReset}
-								icon={<ArrowCounterClockwise size={20} />}
-							/>
+							<Tooltip text='Remove file'>
+								<ToolButton
+									onButtonClick={handleTrash}
+									icon={<Trash size={20} />}
+								/>
+							</Tooltip>
+							<Tooltip text='Reset translations'>
+								<ToolButton
+									onButtonClick={handleReset}
+									icon={<ArrowCounterClockwise size={20} />}
+								/>
+							</Tooltip>
 						</div>
 						<div className='flex gap-8'>
 							{pageCount < 2 ? null : (
