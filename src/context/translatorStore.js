@@ -6,7 +6,7 @@ const useTranslatorStore = create((set) => ({
 	sheetNames: null,
 	workbook: null,
 	fileName: null,
-	targetLanguage: languages[1],
+	targetLanguage: languages[1], // CS
 	translatedLanguages: [],
 	fixed: false,
 	isModalOpen: false,

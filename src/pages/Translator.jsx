@@ -159,6 +159,7 @@ const Translator = () => {
 			setTranslatedLanguages(newTranslatedLanguages);
 		}
 	};
+
 	// File uploading
 	const sheetName = 'Chatbot texts';
 	const handleFileUpload = (e, isDragAndDrop) => {
