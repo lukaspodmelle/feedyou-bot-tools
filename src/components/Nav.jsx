@@ -9,7 +9,7 @@ import { useMenuStore } from '../context';
 const tools = Object.values(siteConfig.tools);
 
 const Nav = () => {
-	const { isMenuOpen, setIsMenuOpen, toggleMenu } = useMenuStore();
+	const { isMenuOpen, toggleMenu } = useMenuStore();
 
 	return (
 		<div
@@ -68,7 +68,7 @@ const Nav = () => {
 						initial={{ scaleY: 0 }}
 						animate={{ scaleY: 1, originY: 0 }}
 						exit={{ opacity: 0 }}
-						className={`NavItemsMobile absolute left-0 right-0 border-b border-slate-200 bg-white w-full flex flex-col gap-2 px-8 py-8 md:hidden`}
+						className={`NavItemsMobile absolute left-0 right-0 border-b border-slate-200 bg-white w-full flex flex-col gap-2 px-8 py-8 md:hidden z-40`}
 						style={{ top: siteConfig.navigation.navHeight }}
 					>
 						{tools.map((tool) => (
