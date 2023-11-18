@@ -8,24 +8,25 @@ import {
 	CaretLeft,
 	CaretRight,
 	ArrowCounterClockwise,
-	Translate,
 } from '@phosphor-icons/react';
 import {
 	LangDropdown,
 	LoadingSpinner,
-	Modal,
 	ToolButton,
 	Tooltip,
 } from '../components';
 import TranslatorUploader from '../ui/TranslatorUploader';
 import TranslatorDebug from '../ui/TranslatorDebug';
+import Modal from '../ui/Modal';
 import { languages } from '../assets/deepl-languages';
 import { siteConfig } from '../siteConfig';
 
 import { useTranslatorStore } from '../context/translatorStore';
+// import TranslatorToolBar from '../ui/TranslatorToolBar';
 
 const linkClassName = `w-[40px] h-[40px] flex justify-center items-center rounded-sm focus:outline-accent-50`;
-const parentLinkClassName = `w-[40px] h-[40px] bg-slate-100 rounded-sm text-sm select-none`;
+const parentLinkClassName = `hidden md:block w-[40px] h-[40px] bg-slate-100 rounded-sm text-sm select-none`;
+const arrowsClassName = `w-[40px] h-[40px] bg-slate-100 rounded-sm text-sm select-none`;
 
 const Translator = () => {
 	// Global states
@@ -302,7 +303,7 @@ const Translator = () => {
 				onConfirm={modal.onConfirm || (() => {})}
 			/>
 
-			{jsonData == '' ? null : (
+			{jsonData.length !== 0 ? (
 				<div
 					className={`${
 						fixed ? 'fixed top-0 z-50' : ''
@@ -339,15 +340,15 @@ const Translator = () => {
 									}
 									pageClassName={parentLinkClassName}
 									pageLinkClassName={linkClassName}
-									previousClassName={parentLinkClassName}
+									previousClassName={arrowsClassName}
 									previousLinkClassName={linkClassName}
-									nextClassName={parentLinkClassName}
+									nextClassName={arrowsClassName}
 									nextLinkClassName={linkClassName}
 									activeClassName={
 										'!bg-accent text-white rounded-sm'
 									}
 									breakClassName={
-										'select-none focus:outline-none'
+										'hidden md:block select-none focus:outline-none'
 									}
 									renderOnZeroPageCount={null}
 								/>
@@ -388,7 +389,7 @@ const Translator = () => {
 						</div>
 					</div>
 				</div>
-			)}
+			) : null}
 			<div
 				className='TranslationScreen [min-height:calc(100vh-95px)] bg-slate-50 flex justify-center'
 				style={
@@ -398,7 +399,7 @@ const Translator = () => {
 				}
 			>
 				<div className='max-w-[900px] w-full px-8 py-8 lg:px-0 lg:py-8'>
-					{jsonData == '' ? (
+					{jsonData.length == 0 ? (
 						<TranslatorUploader
 							onDrop={(e) => {
 								handleFileUpload(e, true);

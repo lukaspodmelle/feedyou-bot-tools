@@ -1,15 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter, Routes, Route, NavLink } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import './index.css';
 import CarouselCreator from './pages/CarouselCreator.jsx';
 import Translator from './pages/Translator';
-import Nav from './components/Nav.jsx';
+import Navigation from '../src/ui/Navigation.jsx';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
 	//<React.StrictMode>
 	<BrowserRouter>
-		<Nav />
+		<Navigation />
 
 		<Routes>
 			<Route path='/' element={<CarouselCreator />} />

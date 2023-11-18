@@ -8,7 +8,7 @@ import { useMenuStore } from '../context';
 
 const tools = Object.values(siteConfig.tools);
 
-const Nav = () => {
+const Navigation = () => {
 	const { isMenuOpen, toggleMenu } = useMenuStore();
 
 	return (
@@ -89,4 +89,4 @@ const Nav = () => {
 	);
 };
 
-export default Nav;
+export default Navigation;
