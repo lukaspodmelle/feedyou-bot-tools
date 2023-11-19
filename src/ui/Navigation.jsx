@@ -46,7 +46,7 @@ const Navigation = () => {
 				<ul className='hidden md:flex items-center gap-8 h-full'>
 					{tools.map((tool) => (
 						<li
-							className='text-slate-600 select-none'
+							className='text-slate-500 select-none'
 							key={tool.slug}
 						>
 							<NavLink

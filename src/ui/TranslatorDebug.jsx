@@ -2,6 +2,8 @@ import React from 'react';
 
 import { useTranslatorStore } from '../context';
 
+const buttonClass = 'bg-black text-white py-1 px-4 rounded-full';
+
 const TranslatorDebug = () => {
 	const {
 		sheetNames,
@@ -12,38 +14,38 @@ const TranslatorDebug = () => {
 	} = useTranslatorStore();
 
 	return (
-		<div className='absolute bottom-4 right-4 flex flex-col gap-2'>
+		<div className='absolute bottom-4 right-4 gap-2 inline-flex flex-col'>
 			<button
 				onClick={() => console.log(sheetNames)}
-				className='bg-black text-white p-2 rounded-full'
+				className={buttonClass}
 			>
-				Debug: Log sheet names
+				Log sheet names
 			</button>
 			<button
 				onClick={() => console.log(workbook)}
-				className='bg-black text-white p-2 rounded-full'
+				className={buttonClass}
 			>
-				Debug: Log workbook
+				Log workbook
 			</button>
 			<button
 				onClick={() => console.log(jsonData)}
-				className='bg-black text-white p-2 rounded-full'
+				className={buttonClass}
 			>
-				Debug: Log jsonData
+				Log jsonData
 			</button>
 			<button
 				onClick={() => console.log(translatedLanguages)}
-				className='bg-black text-white p-2 rounded-full'
+				className={buttonClass}
 			>
-				Debug: Log translatedLanguages
+				Log translatedLanguages
 			</button>
 			<button
 				onClick={() =>
 					console.log(targetLanguage.language.toLowerCase())
 				}
-				className='bg-black text-white p-2 rounded-full'
+				className={buttonClass}
 			>
-				Debug: Log targetLanguage
+				Log targetLanguage
 			</button>
 		</div>
 	);

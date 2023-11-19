@@ -70,6 +70,22 @@ const Translator = () => {
 		};
 	}, []);
 
+	// Save into local storage
+	useEffect(() => {
+		if (jsonData.length === 0) {
+			return;
+		}
+		localStorage.setItem('jsonData', JSON.stringify(jsonData));
+	}, [jsonData]);
+
+	// Load from local storage
+	useEffect(() => {
+		const savedState = localStorage.getItem('jsonData');
+		if (savedState) {
+			setJsonData(JSON.parse(savedState));
+		}
+	}, []);
+
 	// Handle translation
 	const handleTranslation = async () => {
 		const isAnyStringTranslated = jsonData.some((obj) =>
@@ -176,8 +192,8 @@ const Translator = () => {
 				const sheetNames = workbook.SheetNames;
 				if (!sheetNames.includes(sheetName)) {
 					openModal({
-						title: 'Cannot read uploaded file',
-						text: `Please check whether you're uploading a correct file previously exported from Feedyou Platform.`,
+						title: 'Cannot read bot texts',
+						text: `Please check whether you're uploading a correct file with correct sheets previously exported from Feedyou Platform.`,
 						confirm: 'Try again',
 					});
 				}
@@ -219,6 +235,7 @@ const Translator = () => {
 	const handleTrash = () => {
 		setJsonData([]);
 		setTranslatedLanguages([]);
+		localStorage.removeItem('jsonData');
 	};
 
 	// Handle reset translations
@@ -319,7 +336,7 @@ const Translator = () => {
 									icon={<Trash size={20} />}
 								/>
 							</Tooltip>
-							<Tooltip text='Reset translations'>
+							<Tooltip text='Remove translations'>
 								<ToolButton
 									onButtonClick={handleReset}
 									icon={<ArrowCounterClockwise size={20} />}
@@ -384,7 +401,7 @@ const Translator = () => {
 								className='hidden bg-accent text-white border-none py-2 px-5 rounded-md font-bold cursor-pointer lg:flex flex-row items-center gap-2 focus:outline-accent-50'
 								onClick={handleFileExport}
 							>
-								Export file
+								Save file
 								<DownloadSimple />
 							</button>
 						</div>
