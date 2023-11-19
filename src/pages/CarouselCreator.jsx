@@ -3,13 +3,14 @@ import { DownloadSimple } from '@phosphor-icons/react';
 import { Switch } from '@headlessui/react';
 import { toPng } from 'html-to-image';
 
-import { Nav, InputText, Dropdown, InputColor } from './components';
-import phosphorIcons from './assets/phosphor-icons';
-import fonts from './assets/fonts';
+import { InputText, FontsDropdown, InputColor } from '../components';
+import phosphorIcons from '../assets/phosphor-icons';
+import fonts from '../assets/fonts';
+import { siteConfig } from '../siteConfig';
 
-import { useCardStore } from './context';
+import { useCardStore } from '../context';
 
-const App = () => {
+const CarouselCreator = () => {
 	// Stores
 	const {
 		backgroundColor,
@@ -51,8 +52,11 @@ const App = () => {
 
 	return (
 		<>
-			<Nav />
-			<div className='flex [height:calc(100vh-93px)] flex-col-reverse lg:flex-row'>
+			<div
+				className='flex flex-col-reverse lg:flex-row'
+				style={{
+					height: `calc(100vh - ${siteConfig.navigation.navHeight}px)`,
+				}}>
 				<div className='Sidebar px-8 pt-8 pb-[92px] lg:w-[26rem] border-r border-slate-200 overflow-y-auto'>
 					<div className='mb-6'>
 						<h6>Background Color</h6>
@@ -82,7 +86,7 @@ const App = () => {
 
 					<div className='mb-6'>
 						<h6>Text Font</h6>
-						<Dropdown
+						<FontsDropdown
 							items={fonts}
 							selected={textFont}
 							onDropdownChange={(value) => setTextFont(value)}
@@ -146,7 +150,7 @@ const App = () => {
 				</div>
 
 				<div
-					className='Export lg:w-[26rem] bg-accent text-white text-xl absolute bottom-0 left-0 w-full p-8 cursor-pointer flex justify-center items-center gap-4 z-50'
+					className='Export lg:w-[26rem] bg-accent text-white text-xl fixed bottom-0 left-0 right-0 w-full p-6 lg:p-8 cursor-pointer flex justify-center items-center gap-4 z-50'
 					onClick={handleImageExport}>
 					<span className='font-bold'>Export Image</span>
 					<DownloadSimple size={19} weight='bold' />
@@ -189,4 +193,4 @@ const App = () => {
 	);
 };
 
-export default App;
+export default CarouselCreator;

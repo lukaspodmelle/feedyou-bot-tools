@@ -16,7 +16,7 @@ const InputText = ({
 				maxLength={maxLength}
 				placeholder={placeholder}
 				disabled={isDisabled}
-				className='w-full focus:outline-none disabled:text-slate-300 disabled:bg-transparent'
+				className='w-full focus:outline-none disabled:text-slate-300 disabled:bg-transparent border-none p-0 m-0'
 				onChange={(e) => onInputChange(e.target.value)}
 			/>
 			{value != '' ? (
