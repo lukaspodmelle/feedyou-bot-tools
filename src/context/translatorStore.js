@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { languages } from '../assets/deepl-languages';
+import { languages } from '../assets/deeplLanguages';
 
 const useTranslatorStore = create((set) => ({
 	jsonData: [],

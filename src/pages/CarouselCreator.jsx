@@ -1,14 +1,15 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { DownloadSimple } from '@phosphor-icons/react';
 import { Switch } from '@headlessui/react';
 import { toPng } from 'html-to-image';
-
 import { InputText, FontsDropdown, InputColor } from '../components';
-import phosphorIcons from '../assets/phosphor-icons';
+import phosphorIcons from '../assets/phosphorIcons';
 import fonts from '../assets/fonts';
 import { siteConfig } from '../siteConfig';
-
+import { ModalHandler } from '../lib/modals';
+import Modal from '../ui/Modal';
 import { useCardStore } from '../context';
+import { useModalStore } from '../context';
 
 const CarouselCreator = () => {
 	// Stores
@@ -28,6 +29,10 @@ const CarouselCreator = () => {
 		iconsEnabled,
 		setIconsEnabled,
 	} = useCardStore();
+	const { isModalOpen, modal } = useModalStore();
+
+	// Imported functions
+	const { openModal, closeModal } = ModalHandler();
 
 	// HTML to PNG
 	const ref = useRef(null);
@@ -52,6 +57,15 @@ const CarouselCreator = () => {
 
 	return (
 		<>
+			<Modal
+				isOpen={isModalOpen}
+				onClose={closeModal}
+				title={modal.title || 'Title'}
+				text={modal.text || 'Content'}
+				confirm={modal.confirm || 'Confirm'}
+				cancel={modal.cancel || null}
+				onConfirm={modal.onConfirm || (() => {})}
+			/>
 			<div
 				className='flex flex-col-reverse lg:flex-row'
 				style={{
