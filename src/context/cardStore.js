@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import fonts from '../assets/fonts';
-import phosphorIcons from '../assets/phosphor-icons';
+import phosphorIcons from '../assets/phosphorIcons';
 
 const randomIndex = Math.floor(Math.random() * phosphorIcons.length);
 

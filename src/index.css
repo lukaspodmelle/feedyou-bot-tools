@@ -30,39 +30,39 @@
 	button {
 		@apply select-none;
 	}
-}
 
-/* Scrollbar */
-::-webkit-scrollbar {
-	width: 7px;
-}
-::-webkit-scrollbar-track {
-	@apply bg-slate-50;
-}
-::-webkit-scrollbar-thumb {
-	@apply bg-slate-200;
-}
-::-webkit-scrollbar-thumb:hover {
-	@apply bg-slate-300;
-}
+	/* Scrollbar */
+	::-webkit-scrollbar {
+		width: 7px;
+	}
+	::-webkit-scrollbar-track {
+		@apply bg-slate-50;
+	}
+	::-webkit-scrollbar-thumb {
+		@apply bg-slate-200;
+	}
+	::-webkit-scrollbar-thumb:hover {
+		@apply bg-slate-300;
+	}
 
-/* Editor BG */
-.Editor {
-	background-image: linear-gradient(
-		45deg,
-		rgba(241, 245, 249, 0.4) 25%,
-		transparent 25%,
-		transparent 50%,
-		rgba(241, 245, 249, 0.4) 50%,
-		rgba(241, 245, 249, 0.4) 75%,
-		transparent 75%,
-		transparent
-	);
-	background-size: 10px 10px;
-}
+	/* Editor BG */
+	.Editor {
+		background-image: linear-gradient(
+			45deg,
+			rgba(241, 245, 249, 0.4) 25%,
+			transparent 25%,
+			transparent 50%,
+			rgba(241, 245, 249, 0.4) 50%,
+			rgba(241, 245, 249, 0.4) 75%,
+			transparent 75%,
+			transparent
+		);
+		background-size: 10px 10px;
+	}
 
-/* Color picker */
-.react-colorful {
-	width: 120px !important;
-	height: 120px !important;
+	/* Color picker */
+	.react-colorful {
+		width: 120px !important;
+		height: 120px !important;
+	}
 }

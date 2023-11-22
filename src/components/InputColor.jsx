@@ -55,9 +55,7 @@ const InputColor = ({
 				<div
 					ref={colorPickerRef}
 					className={`${
-						openColorPicker
-							? 'block opacity-100'
-							: 'hidden opacity-0'
+						openColorPicker ? 'block' : 'hidden'
 					} absolute top-8 left-0 z-40`}>
 					<HexColorPicker color={color} onChange={onInputChange} />
 				</div>

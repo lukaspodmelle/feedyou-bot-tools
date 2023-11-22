@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ReactPaginate from 'react-paginate';
 import XLSX from 'xlsx';
-
 import {
 	DownloadSimple,
 	Trash,
@@ -18,11 +17,12 @@ import {
 import TranslatorUploader from '../ui/TranslatorUploader';
 import TranslatorDebug from '../ui/TranslatorDebug';
 import Modal from '../ui/Modal';
-import { languages } from '../assets/deepl-languages';
+import { languages } from '../assets/deeplLanguages';
 import { siteConfig } from '../siteConfig';
-
+import { demoData } from '../assets/demoData';
+import { ModalHandler } from '../lib/modals';
 import { useTranslatorStore } from '../context/translatorStore';
-// import TranslatorToolBar from '../ui/TranslatorToolBar';
+import { useModalStore } from '../context';
 
 const linkClassName = `w-[40px] h-[40px] flex justify-center items-center rounded-sm focus:outline-accent-50`;
 const parentLinkClassName = `hidden md:block w-[40px] h-[40px] bg-slate-100 rounded-sm text-sm select-none`;
@@ -45,23 +45,23 @@ const Translator = () => {
 		setTranslatedLanguages,
 		fixed,
 		setFixed,
-		isModalOpen,
-		setModalOpen,
-		modal,
-		setModal,
 	} = useTranslatorStore();
+	const { isModalOpen, modal } = useModalStore();
 
 	// Local states
 	const [loadingTranslation, setLoadingTranslation] = useState(false);
 	const [isDragging, setIsDragging] = useState(false);
 	const [currentPage, setCurrentPage] = useState(0);
 
+	// Imported functions
+	const { openModal, closeModal } = ModalHandler();
+
 	// Tool bar scrolling
 	useEffect(() => {
 		const handleScroll = () => {
 			const scrollY = window.scrollY;
 
-			const threshold = 93; // height of navbar in px
+			const threshold = siteConfig.navigation.navHeight; // height of navbar in px
 			setFixed(scrollY >= threshold);
 		};
 		window.addEventListener('scroll', handleScroll);
@@ -75,15 +75,29 @@ const Translator = () => {
 		if (jsonData.length === 0) {
 			return;
 		}
-		localStorage.setItem('jsonData', JSON.stringify(jsonData));
-	}, [jsonData]);
+		const saveToLocalStorage = (key, data) => {
+			localStorage.setItem(key, JSON.stringify(data));
+		};
+		saveToLocalStorage('jsonData', jsonData);
+		saveToLocalStorage('translatedLanguages', translatedLanguages);
+		saveToLocalStorage('sheetNames', sheetNames);
+		saveToLocalStorage('workbook', workbook);
+		saveToLocalStorage('fileName', fileName);
+	}, [jsonData, translatedLanguages, sheetNames, workbook, fileName]);
 
 	// Load from local storage
 	useEffect(() => {
-		const savedState = localStorage.getItem('jsonData');
-		if (savedState) {
-			setJsonData(JSON.parse(savedState));
-		}
+		const loadFromLocalStorage = (key, setter) => {
+			const data = localStorage.getItem(key);
+			if (data) {
+				setter(JSON.parse(data));
+			}
+		};
+		loadFromLocalStorage('jsonData', setJsonData);
+		loadFromLocalStorage('translatedLanguages', setTranslatedLanguages);
+		loadFromLocalStorage('sheetNames', setSheetNames);
+		loadFromLocalStorage('workbook', setWorkbook);
+		loadFromLocalStorage('fileName', setFileName);
 	}, []);
 
 	// Handle translation
@@ -119,6 +133,7 @@ const Translator = () => {
 			setLoadingTranslation(false);
 		}
 	};
+
 	// Fetch DeepL translation
 	const postData = async (url, data) => {
 		try {
@@ -140,6 +155,7 @@ const Translator = () => {
 			throw error;
 		}
 	};
+
 	// Process fetched translation
 	const processReturnedData = (data) => {
 		const translatedTexts = data.translations.map(
@@ -236,9 +252,14 @@ const Translator = () => {
 		setJsonData([]);
 		setTranslatedLanguages([]);
 		localStorage.removeItem('jsonData');
+		localStorage.removeItem('translatedLanguages');
+		localStorage.removeItem('sheetNames');
+		localStorage.removeItem('workbook');
+		localStorage.removeItem('fileName');
+		localStorage.removeItem('jsonData');
 	};
 
-	// Handle reset translations
+	// Handle reseting translations
 	const handleReset = () => {
 		const newJsonData = [...jsonData];
 		for (let obj of newJsonData) {
@@ -248,15 +269,31 @@ const Translator = () => {
 		setJsonData(newJsonData);
 	};
 
-	// Handle modals
-	const openModal = (content) => {
-		setModal(content);
-		setModalOpen(true);
+	// Handle reset translations button
+	const handleResetButton = async () => {
+		const isAnyStringTranslated = jsonData.some((obj) =>
+			obj.hasOwnProperty(targetLanguage.language.toLowerCase())
+		);
+		if (isAnyStringTranslated) {
+			await new Promise((resolve) =>
+				openModal({
+					title: 'Confirm removal',
+					text: `This action will remove all translations for this language.`,
+					confirm: 'Remove',
+					cancel: 'Cancel',
+					onConfirm: resolve,
+				})
+			);
+		}
+		handleReset();
 	};
-	const closeModal = () => {
-		setModal({});
-		setModalOpen(false);
-	};
+
+	// Set demo data
+	useEffect(() => {
+		if (window.location.hash === '#demo') {
+			setJsonData(demoData);
+		}
+	}, []);
 
 	// Display data & pagination
 	const itemsPerPage = 10;
@@ -269,8 +306,7 @@ const Translator = () => {
 	const renderItems = currentItems.map((item, index) => (
 		<div
 			key={index}
-			className='TranslationCard bg-white text-slate-700 border border-slate-200 rounded-md mb-4 shadow-sm'
-		>
+			className='TranslationCard bg-white text-slate-700 border border-slate-200 rounded-md mb-4 shadow-sm'>
 			<div className='flex justify-between py-4 px-6 border-b border-slate-200'>
 				<div className='flex gap-8'>
 					<div className='flex flex-col'>
@@ -326,8 +362,7 @@ const Translator = () => {
 					className={`${
 						fixed ? 'fixed top-0 z-50' : ''
 					} bg-white border-b border-slate-200 w-full px-8 flex justify-center`}
-					style={{ height: siteConfig.navigation.toolsHeight }}
-				>
+					style={{ height: siteConfig.navigation.toolsHeight }}>
 					<div className='w-full flex justify-between items-center'>
 						<div className='hidden lg:flex gap-2'>
 							<Tooltip text='Remove file'>
@@ -338,7 +373,7 @@ const Translator = () => {
 							</Tooltip>
 							<Tooltip text='Remove translations'>
 								<ToolButton
-									onButtonClick={handleReset}
+									onButtonClick={handleResetButton}
 									icon={<ArrowCounterClockwise size={20} />}
 								/>
 							</Tooltip>
@@ -382,8 +417,7 @@ const Translator = () => {
 								/>
 								<button
 									className='bg-accent-50 text-accent border-none py-2 px-5 rounded-md font-bold cursor-pointer flex flex-row items-center gap-4 focus:outline-accent'
-									onClick={handleTranslation}
-								>
+									onClick={handleTranslation}>
 									{loadingTranslation && (
 										<LoadingSpinner
 											ringColor='fill-accent'
@@ -399,8 +433,7 @@ const Translator = () => {
 
 							<button
 								className='hidden bg-accent text-white border-none py-2 px-5 rounded-md font-bold cursor-pointer lg:flex flex-row items-center gap-2 focus:outline-accent-50'
-								onClick={handleFileExport}
-							>
+								onClick={handleFileExport}>
 								Save file
 								<DownloadSimple />
 							</button>
@@ -409,14 +442,22 @@ const Translator = () => {
 				</div>
 			) : null}
 			<div
-				className='TranslationScreen [min-height:calc(100vh-95px)] bg-slate-50 flex justify-center'
+				className={`TranslationScreen bg-slate-50 flex justify-center`}
 				style={
-					jsonData.length !== 0 && fixed
+					jsonData.length === 0
+						? {
+								minHeight: `calc(100vh - ${siteConfig.navigation.navHeight}px)`,
+						  }
+						: jsonData.length !== 0 && fixed
 						? { marginTop: siteConfig.navigation.toolsHeight }
-						: {}
-				}
-			>
-				<div className='max-w-[900px] w-full px-8 py-8 lg:px-0 lg:py-8'>
+						: {
+								minHeight: `calc(100vh - ${
+									siteConfig.navigation.navHeight +
+									siteConfig.navigation.toolsHeight
+								}px)`,
+						  }
+				}>
+				<div className='max-w-[1100px] w-full px-8 py-8 lg:px-0 lg:py-8'>
 					{jsonData.length == 0 ? (
 						<TranslatorUploader
 							onDrop={(e) => {
@@ -441,14 +482,13 @@ const Translator = () => {
 									icon={<Trash size={20} />}
 								/>
 								<ToolButton
-									onButtonClick={handleReset}
+									onButtonClick={handleResetButton}
 									icon={<ArrowCounterClockwise size={20} />}
 								/>
 							</div>
 							<div
 								onClick={handleFileExport}
-								className='w-[52px] h-[52px] bg-accent rounded-full flex justify-center items-center cursor-pointer'
-							>
+								className='w-[52px] h-[52px] bg-accent rounded-full flex justify-center items-center cursor-pointer'>
 								<DownloadSimple size={26} color='white' />
 							</div>
 						</div>
@@ -456,9 +496,7 @@ const Translator = () => {
 
 					{renderItems}
 
-					{window.location.href.includes('#debug') && (
-						<TranslatorDebug />
-					)}
+					{window.location.hash === '#debug' && <TranslatorDebug />}
 				</div>
 			</div>
 		</>

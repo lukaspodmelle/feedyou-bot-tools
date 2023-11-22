@@ -1,17 +1,18 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { DownloadSimple } from '@phosphor-icons/react';
 import { Switch } from '@headlessui/react';
 import { toPng } from 'html-to-image';
-
 import { InputText, FontsDropdown, InputColor } from '../components';
-import phosphorIcons from '../assets/phosphor-icons';
+import phosphorIcons from '../assets/phosphorIcons';
 import fonts from '../assets/fonts';
 import { siteConfig } from '../siteConfig';
-
+import { ModalHandler } from '../lib/modals';
+import Modal from '../ui/Modal';
 import { useCardStore } from '../context';
+import { useModalStore } from '../context';
 
 const CarouselCreator = () => {
-	// Stores
+	// Global stores
 	const {
 		backgroundColor,
 		setBackgroundColor,
@@ -28,6 +29,10 @@ const CarouselCreator = () => {
 		iconsEnabled,
 		setIconsEnabled,
 	} = useCardStore();
+	const { isModalOpen, modal } = useModalStore();
+
+	// Imported functions
+	const { openModal, closeModal } = ModalHandler();
 
 	// HTML to PNG
 	const ref = useRef(null);
@@ -52,6 +57,15 @@ const CarouselCreator = () => {
 
 	return (
 		<>
+			<Modal
+				isOpen={isModalOpen}
+				onClose={closeModal}
+				title={modal.title || 'Title'}
+				text={modal.text || 'Content'}
+				confirm={modal.confirm || 'Confirm'}
+				cancel={modal.cancel || null}
+				onConfirm={modal.onConfirm || (() => {})}
+			/>
 			<div
 				className='flex flex-col-reverse lg:flex-row'
 				style={{
@@ -120,7 +134,7 @@ const CarouselCreator = () => {
 						</div>
 
 						<div
-							className={`IconPickerBody p-3 border-b border-x border-slate-200 rounded-br-md rounded-bl-md grid grid-cols-3 xs:grid-cols-5 md:grid-cols-8 lg:grid-cols-5 gap-3 overflow-y-auto h-[18rem]`}>
+							className={`IconPickerBody p-3 border-b border-x border-slate-200 rounded-br-md rounded-bl-md grid grid-cols-3 xs:grid-cols-5 md:grid-cols-8 lg:grid-cols-5 gap-3 overflow-y-auto h-[18rem] bg-white z-0`}>
 							{phosphorIcons.map((icon, index) => (
 								<button
 									key={index}
@@ -131,7 +145,7 @@ const CarouselCreator = () => {
 												? 'border-accent focus:outline-accent'
 												: 'border-slate-200 hover:border-slate-300 hover:border-2 focus:outline-slate-300'
 											: ' pointer-events-none cursor-not-allowed'
-									} border-2 p-3 rounded-md aspect-square flex justify-center items-center`}>
+									} border-2 p-3 rounded-md aspect-square flex justify-center items-center bg-white`}>
 									<icon.icon
 										weight='duotone'
 										size={26}
