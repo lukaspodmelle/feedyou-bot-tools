@@ -12,7 +12,7 @@ import { useCardStore } from '../context';
 import { useModalStore } from '../context';
 
 const CarouselCreator = () => {
-	// Stores
+	// Global stores
 	const {
 		backgroundColor,
 		setBackgroundColor,
@@ -134,7 +134,7 @@ const CarouselCreator = () => {
 						</div>
 
 						<div
-							className={`IconPickerBody p-3 border-b border-x border-slate-200 rounded-br-md rounded-bl-md grid grid-cols-3 xs:grid-cols-5 md:grid-cols-8 lg:grid-cols-5 gap-3 overflow-y-auto h-[18rem]`}>
+							className={`IconPickerBody p-3 border-b border-x border-slate-200 rounded-br-md rounded-bl-md grid grid-cols-3 xs:grid-cols-5 md:grid-cols-8 lg:grid-cols-5 gap-3 overflow-y-auto h-[18rem] bg-white z-0`}>
 							{phosphorIcons.map((icon, index) => (
 								<button
 									key={index}
@@ -145,7 +145,7 @@ const CarouselCreator = () => {
 												? 'border-accent focus:outline-accent'
 												: 'border-slate-200 hover:border-slate-300 hover:border-2 focus:outline-slate-300'
 											: ' pointer-events-none cursor-not-allowed'
-									} border-2 p-3 rounded-md aspect-square flex justify-center items-center`}>
+									} border-2 p-3 rounded-md aspect-square flex justify-center items-center bg-white`}>
 									<icon.icon
 										weight='duotone'
 										size={26}

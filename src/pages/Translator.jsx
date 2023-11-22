@@ -252,9 +252,14 @@ const Translator = () => {
 		setJsonData([]);
 		setTranslatedLanguages([]);
 		localStorage.removeItem('jsonData');
+		localStorage.removeItem('translatedLanguages');
+		localStorage.removeItem('sheetNames');
+		localStorage.removeItem('workbook');
+		localStorage.removeItem('fileName');
+		localStorage.removeItem('jsonData');
 	};
 
-	// Handle reset translations
+	// Handle reseting translations
 	const handleReset = () => {
 		const newJsonData = [...jsonData];
 		for (let obj of newJsonData) {
@@ -262,6 +267,25 @@ const Translator = () => {
 		}
 		handleSetTranslatedLanguages(true);
 		setJsonData(newJsonData);
+	};
+
+	// Handle reset translations button
+	const handleResetButton = async () => {
+		const isAnyStringTranslated = jsonData.some((obj) =>
+			obj.hasOwnProperty(targetLanguage.language.toLowerCase())
+		);
+		if (isAnyStringTranslated) {
+			await new Promise((resolve) =>
+				openModal({
+					title: 'Confirm removal',
+					text: `This action will remove all translations for this language.`,
+					confirm: 'Remove',
+					cancel: 'Cancel',
+					onConfirm: resolve,
+				})
+			);
+		}
+		handleReset();
 	};
 
 	// Set demo data
@@ -349,7 +373,7 @@ const Translator = () => {
 							</Tooltip>
 							<Tooltip text='Remove translations'>
 								<ToolButton
-									onButtonClick={handleReset}
+									onButtonClick={handleResetButton}
 									icon={<ArrowCounterClockwise size={20} />}
 								/>
 							</Tooltip>
@@ -458,7 +482,7 @@ const Translator = () => {
 									icon={<Trash size={20} />}
 								/>
 								<ToolButton
-									onButtonClick={handleReset}
+									onButtonClick={handleResetButton}
 									icon={<ArrowCounterClockwise size={20} />}
 								/>
 							</div>

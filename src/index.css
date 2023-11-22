@@ -64,6 +64,5 @@
 	.react-colorful {
 		width: 120px !important;
 		height: 120px !important;
-		@apply z-40;
 	}
 }
