@@ -32,6 +32,13 @@ const InputColor = ({
 		}
 	};
 
+	const handleSetOpenColorPicker = () => {
+		if (!isDisabled) {
+			setOpenColorPicker(!openColorPicker);
+		}
+		return;
+	};
+
 	return (
 		<div
 			className={`${
@@ -46,9 +53,7 @@ const InputColor = ({
 							? { background: color }
 							: { background: '#FFFFFF' }
 					}
-					onClick={() =>
-						setOpenColorPicker((prevState) => !prevState)
-					}>
+					onClick={handleSetOpenColorPicker}>
 					{color === '' ? <X color='#d1d9e3' /> : ''}
 				</span>
 

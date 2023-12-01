@@ -8,3 +8,4 @@ export { default as Checkbox } from './Checkbox';
 export { default as LoadingSpinner } from './LoadingSpinner';
 export { default as ToolButton } from './ToolButton';
 export { default as Tooltip } from './Tooltip';
+export { default as SizeButtons } from './SizeButtons';

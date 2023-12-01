@@ -1,8 +1,13 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { DownloadSimple } from '@phosphor-icons/react';
 import { Switch } from '@headlessui/react';
 import { toPng } from 'html-to-image';
-import { InputText, FontsDropdown, InputColor } from '../components';
+import {
+	InputText,
+	FontsDropdown,
+	InputColor,
+	SizeButtons,
+} from '../components';
 import phosphorIcons from '../assets/phosphorIcons';
 import fonts from '../assets/fonts';
 import { siteConfig } from '../siteConfig';
@@ -28,6 +33,8 @@ const CarouselCreator = () => {
 		setIconColor,
 		iconsEnabled,
 		setIconsEnabled,
+		cardSize,
+		setCardSize,
 	} = useCardStore();
 	const { isModalOpen, modal } = useModalStore();
 
@@ -71,7 +78,12 @@ const CarouselCreator = () => {
 				style={{
 					height: `calc(100vh - ${siteConfig.navigation.navHeight}px)`,
 				}}>
-				<div className='Sidebar px-8 pt-8 pb-[92px] lg:w-[26rem] border-r border-slate-200 overflow-y-auto'>
+				<div className='Sidebar px-8 pt-8 pb-[92px] lg:w-[28rem] border-r border-slate-200 overflow-y-auto'>
+					<div className='mb-6'>
+						<h6>Aspect Ratio</h6>
+						<SizeButtons />
+					</div>
+
 					<div className='mb-6'>
 						<h6>Background Color</h6>
 						<InputColor
@@ -164,16 +176,16 @@ const CarouselCreator = () => {
 				</div>
 
 				<div
-					className='Export lg:w-[26rem] bg-accent text-white text-xl fixed bottom-0 left-0 right-0 w-full p-6 lg:p-8 cursor-pointer flex justify-center items-center gap-4 z-50'
+					className='Export lg:w-[28rem] bg-accent text-white text-xl fixed bottom-0 left-0 right-0 w-full p-6 lg:p-8 cursor-pointer flex justify-center items-center gap-4 z-50'
 					onClick={handleImageExport}>
-					<span className='font-bold'>Export Image</span>
+					<span className='font-bold'>Save Image</span>
 					<DownloadSimple size={19} weight='bold' />
 				</div>
 
-				<div className='Editor xs:p-12 flex flex-1 justify-center bg-slate-50'>
+				<div className='Editor xs:p-12 flex flex-1 justify-center bg-slate-50 relative'>
 					<div
 						ref={ref}
-						className='Card scale-50 xs:scale-90 lg:scale-100 w-[450px] h-[250px] flex items-center justify-center shrink-0 shadow-sm overflow-hidden'
+						className={`${cardSize} Card scale-50 xs:scale-90 lg:scale-100 flex items-center justify-center shrink-0 shadow-sm overflow-hidden`}
 						style={
 							backgroundColor !== ''
 								? { background: backgroundColor }

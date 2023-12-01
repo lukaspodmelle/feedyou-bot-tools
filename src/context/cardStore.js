@@ -3,6 +3,7 @@ import fonts from '../assets/fonts';
 import phosphorIcons from '../assets/phosphorIcons';
 
 const randomIndex = Math.floor(Math.random() * phosphorIcons.length);
+const nineToFive = 'w-[450px] h-[250px]';
 
 const cardDefaults = {
 	backgroundColor: '#006cf8',
@@ -11,6 +12,7 @@ const cardDefaults = {
 	textFont: fonts[0],
 	Icon: phosphorIcons[randomIndex].icon,
 	iconColor: '#FFFFFF',
+	cardSize: nineToFive,
 };
 
 const useCardStore = create((set) => ({
@@ -21,6 +23,7 @@ const useCardStore = create((set) => ({
 	Icon: cardDefaults.Icon,
 	iconColor: cardDefaults.iconColor,
 	iconsEnabled: true,
+	cardSize: cardDefaults.cardSize,
 
 	setBackgroundColor: (value) => set({ backgroundColor: value }),
 	setText: (value) => set({ text: value }),
@@ -29,6 +32,7 @@ const useCardStore = create((set) => ({
 	setIcon: (value) => set({ Icon: value }),
 	setIconColor: (value) => set({ iconColor: value }),
 	setIconsEnabled: (value) => set({ iconsEnabled: value }),
+	setCardSize: (value) => set({ cardSize: value }),
 }));
 
 export { useCardStore };
